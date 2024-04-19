@@ -36,7 +36,7 @@ Modify your `relay.config.js` file to reflect the following:
 
 ### Configuring your Relay Environment
 
-   This example uses [Supabase](https://supabase.com) for the GraphQL server, but pg_graphql can be used independently.
+   This example uses [Khulnasoft](https://khulnasoft.com) for the GraphQL server, but pg_graphql can be used independently.
 
    ```typescript
    import {
@@ -47,19 +47,19 @@ Modify your `relay.config.js` file to reflect the following:
      Store,
    } from 'relay-runtime'
 
-   import supabase, { SUPABASE_ANON_KEY, SUPABASE_URL } from './supabase'
+   import khulnasoft, { KHULNASOFT_ANON_KEY, KHULNASOFT_URL } from './khulnasoft'
 
    const fetchQuery: FetchFunction = async (operation, variables) => {
      const {
        data: { session },
-     } = await supabase.auth.getSession()
+     } = await khulnasoft.auth.getSession()
 
-     const response = await fetch(`${SUPABASE_URL}/graphql/v1`, {
+     const response = await fetch(`${KHULNASOFT_URL}/graphql/v1`, {
        method: 'POST',
        headers: {
          'Content-Type': 'application/json',
-         apikey: SUPABASE_ANON_KEY,
-         Authorization: `Bearer ${session?.access_token ?? SUPABASE_ANON_KEY}`,
+         apikey: KHULNASOFT_ANON_KEY,
+         Authorization: `Bearer ${session?.access_token ?? KHULNASOFT_ANON_KEY}`,
        },
        body: JSON.stringify({
          query: operation.text,

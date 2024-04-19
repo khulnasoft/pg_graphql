@@ -189,7 +189,7 @@ impl Function {
     }
 
     fn is_in_a_system_schema(&self) -> bool {
-        // These are default schemas in supabase configuration
+        // These are default schemas in khulnasoft configuration
         let system_schemas = &["graphql", "graphql_public", "auth", "extensions"];
         system_schemas.contains(&self.schema_name.as_str())
     }

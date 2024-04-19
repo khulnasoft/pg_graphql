@@ -639,7 +639,7 @@ begin;
 
     rollback to savepoint a;
 
-    -- Confirm that internal functions on the supabase default search_path
+    -- Confirm that internal functions on the khulnasoft default search_path
     -- are excluded from GraphQL API
     create schema if not exists auth;
     create schema if not exists extensions;
@@ -671,7 +671,7 @@ begin;
         returns smallint language sql immutable
     as $$ select 10; $$;
 
-    -- Set search path to include all supabase system schemas + the counter example
+    -- Set search path to include all khulnasoft system schemas + the counter example
     set search_path = public, graphql, graphql_public, auth, extensions, counter_example;
 
     -- Show all fields available on the QueryType. Only the function "visible" should be seen

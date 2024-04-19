@@ -1,4 +1,4 @@
-The Supabase GraphQL API is automatically reflected from your database's schema using [pg_graphql](https://github.com/khulnasoft/pg_graphql). It supports:
+The Khulnasoft GraphQL API is automatically reflected from your database's schema using [pg_graphql](https://github.com/khulnasoft/pg_graphql). It supports:
 
 - Basic CRUD operations (Create/Read/Update/Delete)
 - Support for Tables, Views, Materialized Views, and Foreign Tables
@@ -8,16 +8,16 @@ The Supabase GraphQL API is automatically reflected from your database's schema 
 
 All requests resolve in a single round-trip leading to fast response times and high throughput.
 
-If you haven't created a Supabase project, do that [here](https://database.new) so you can follow along with the guide.
+If you haven't created a Khulnasoft project, do that [here](https://database.new) so you can follow along with the guide.
 
 ## Quickstart
 
-`https://<PROJECT_REF>.supabase.co/graphql/v1` is your project's GraphQL API endpoint. See [PROJECT_REF](#project-reference-project_ref) for instructions on finding your project's reference. Note that the url does not allow a trailing `/`.
+`https://<PROJECT_REF>.khulnasoft.co/graphql/v1` is your project's GraphQL API endpoint. See [PROJECT_REF](#project-reference-project_ref) for instructions on finding your project's reference. Note that the url does not allow a trailing `/`.
 
 To access the API you MUST provide your project's [API key](#api-key-api_key) as a header in every request. For example see line 2 of the cURL request below.
 
 ```sh
-curl -X POST https://<PROJECT_REF>.supabase.co/graphql/v1 \
+curl -X POST https://<PROJECT_REF>.khulnasoft.co/graphql/v1 \
     -H 'apiKey: <API_KEY>' \
     -H 'Content-Type: application/json' \
     --data-raw '{"query": "{ accountCollection(first: 1) { edges { node { id } } } }", "variables": {}}'
@@ -27,37 +27,37 @@ For user authentication, pass an `Authorization` header e.g.
 ```
     -H 'Authorization: Bearer <JWT>'
 ```
-See the [auth docs](https://supabase.com/docs/guides/auth/auth-email) to understand how to sign-up/sign-in users to your application and retrieve a JWT. The [apollo](usage_with_apollo.md) and [relay](usage_with_relay.md) guides also include complete examples of using Supabase Auth with GraphQL. Supabase Auth works with [row level security (RLS)](https://supabase.com/docs/guides/auth/row-level-security) allowing you to control which users can access tables/rows.
+See the [auth docs](https://khulnasoft.com/docs/guides/auth/auth-email) to understand how to sign-up/sign-in users to your application and retrieve a JWT. The [apollo](usage_with_apollo.md) and [relay](usage_with_relay.md) guides also include complete examples of using Khulnasoft Auth with GraphQL. Khulnasoft Auth works with [row level security (RLS)](https://khulnasoft.com/docs/guides/auth/row-level-security) allowing you to control which users can access tables/rows.
 
-The fastest way to get started with GraphQL on Supabase is using the [GraphQL IDE (GraphiQL) built directly into Supabase Studio](#supabase-studio).
+The fastest way to get started with GraphQL on Khulnasoft is using the [GraphQL IDE (GraphiQL) built directly into Khulnasoft Studio](#khulnasoft-studio).
 
 
 ## Clients
 
-If you're new to GraphQL or Supabase, we strongly recommend starting with Supabase GraphQL by following the [Supabase Studio guide](#supabase-studio).
+If you're new to GraphQL or Khulnasoft, we strongly recommend starting with Khulnasoft GraphQL by following the [Khulnasoft Studio guide](#khulnasoft-studio).
 
-For more experienced users, or when you're ready to productionize your application, access the API using [supabase-js](#supabase-js), [GraphiQL](#connecting-graphiql), or any HTTP client, for example [cURL](#curl).
+For more experienced users, or when you're ready to productionize your application, access the API using [khulnasoft-js](#khulnasoft-js), [GraphiQL](#connecting-graphiql), or any HTTP client, for example [cURL](#curl).
 
-### Supabase Studio
+### Khulnasoft Studio
 
-The easiest way to make a GraphQL request with Supabase is to use [Supabase Studio's builtin GraphiQL IDE](https://app.supabase.com/project/_/api/graphiql).
-You can access GraphiQL [here](https://app.supabase.com/project/_/api/graphiql) by selecting the relevant project. Alternatively, navigate there within Studio at `API Docs > GraphQL > GraphiQL`.
+The easiest way to make a GraphQL request with Khulnasoft is to use [Khulnasoft Studio's builtin GraphiQL IDE](https://app.khulnasoft.com/project/_/api/graphiql).
+You can access GraphiQL [here](https://app.khulnasoft.com/project/_/api/graphiql) by selecting the relevant project. Alternatively, navigate there within Studio at `API Docs > GraphQL > GraphiQL`.
 
-![graphiql](./assets/supabase_graphiql.png)
+![graphiql](./assets/khulnasoft_graphiql.png)
 
 Type queries in the central query editor and use the green icon to submit requests to the server. Results are shown in the output display to the right of the editor.
 
 To explore the API visually, select the docs icon shown below and navigate through each type to see how they connect to the Graph.
 
-![graphiql](./assets/supabase_graphiql_explore.png)
+![graphiql](./assets/khulnasoft_graphiql_explore.png)
 
 pg_graphql mirrors the structure of the project's SQL schema in the GraphQL API. If your project is new and empty, the GraphQL API will be empty as well, with the exception of basic introspection types. For a more interesting result, go to the SQL or table editor and create a table.
 
-![graphiql](./assets/supabase_sql_editor.png)
+![graphiql](./assets/khulnasoft_sql_editor.png)
 
 Head back to GraphiQL to see the new table reflected in your GraphQL API's Query and Mutation types.
 
-![graphiql](./assets/supabase_graphiql_query_table.png)
+![graphiql](./assets/khulnasoft_graphiql_query_table.png)
 
 If you'd like your type and field names to match the GraphQL convention of `PascalCase` for types and `camelCase` for fields, check out the [pg_graphql inflection guide](configuration.md#inflection).
 
@@ -67,11 +67,11 @@ To access the GraphQL API over HTTP, first collect your [project reference](#pro
 
 ### cURL
 
-To hit the Supabase GraphQL API using cURL, submit a `POST` request to your GraphQL API's URL shown below, substituting in your [PROJECT_REF](#project-reference-project_ref) and passing the project's [API_KEY](#api-key-api_key) as the `apiKey` header:
+To hit the Khulnasoft GraphQL API using cURL, submit a `POST` request to your GraphQL API's URL shown below, substituting in your [PROJECT_REF](#project-reference-project_ref) and passing the project's [API_KEY](#api-key-api_key) as the `apiKey` header:
 
 
 ```sh
-curl -X POST https://<PROJECT_REF>.supabase.co/graphql/v1 \
+curl -X POST https://<PROJECT_REF>.khulnasoft.co/graphql/v1 \
     -H 'apiKey: <API_KEY>' \
     -H 'Content-Type: application/json' \
     --data-raw '{"query": "{ accountCollection(first: 1) { edges { node { id } } } }", "variables": {}}'
@@ -95,15 +95,15 @@ and there are no `variables`
 {}
 ```
 
-### supabase-js
+### khulnasoft-js
 
-The JS ecosystem supports multiple prominent GraphQL frameworks. [supabase-js](https://supabase.com/docs/reference/javascript/introduction) is unopinionated about your GraphQL tooling and can integrate with all of them.
+The JS ecosystem supports multiple prominent GraphQL frameworks. [khulnasoft-js](https://khulnasoft.com/docs/reference/javascript/introduction) is unopinionated about your GraphQL tooling and can integrate with all of them.
 
-For an example integration, check out the [Relay guide](usage_with_relay.md), complete with Supabase Auth support.
+For an example integration, check out the [Relay guide](usage_with_relay.md), complete with Khulnasoft Auth support.
 
 ### GraphiQL
 
-If you'd prefer to connect to Supabase GraphQL using an external IDE like GraphiQL, save the HTML snippet below as `supabase_graphiql.html` and open it in your browser. Be sure to substitute in your [PROJECT_REF](#project-reference-project_ref) and [API_KEY](#api-key-api_key) beneath the `EDIT BELOW` comment:
+If you'd prefer to connect to Khulnasoft GraphQL using an external IDE like GraphiQL, save the HTML snippet below as `khulnasoft_graphiql.html` and open it in your browser. Be sure to substitute in your [PROJECT_REF](#project-reference-project_ref) and [API_KEY](#api-key-api_key) beneath the `EDIT BELOW` comment:
 
 
 ```html
@@ -127,7 +127,7 @@ If you'd prefer to connect to Supabase GraphQL using an external IDE like Graphi
       ////////////////
 
       const fetcher = GraphiQL.createFetcher({
-        url: 'https://<PROJECT_REF>.supabase.co/graphql/v1',
+        url: 'https://<PROJECT_REF>.khulnasoft.co/graphql/v1',
         headers: {
           "apiKey": "<API_KEY>",
         }
@@ -144,7 +144,7 @@ If you'd prefer to connect to Supabase GraphQL using an external IDE like Graphi
 
 ## Schema & Table Visibility
 
-pg_graphql uses Postgres' `search_path` and permissions system to determine which schemas and entities are exposed in the GraphQL schema. By default on Supabase, tables, views, and functions in the `public` schema are visible to anonymous (`anon`) and logged in (`authenticated`) roles.
+pg_graphql uses Postgres' `search_path` and permissions system to determine which schemas and entities are exposed in the GraphQL schema. By default on Khulnasoft, tables, views, and functions in the `public` schema are visible to anonymous (`anon`) and logged in (`authenticated`) roles.
 
 ### Remove a Table from the API
 
@@ -162,7 +162,7 @@ Adding a schema to the GraphQL API is a two step process.
 
 First, we need to add the new schema to the API search path. In the example below, we add a comma separated value for the new `app` schema:
 
-![add_schema](./assets/supabase_add_schema.png)
+![add_schema](./assets/khulnasoft_add_schema.png)
 
 Next, make sure the schema and entities (tables/views/functions) that you intend to expose are accessible by the relevant roles. For example, to match permissions from the public schema:
 
@@ -210,17 +210,17 @@ Always test a new version of pg_graphql extensively on a development or staging 
 
 ## Local Development
 
-When starting a local project through the [Supabase CLI](https://supabase.com/docs/guides/cli), the output of `supabase start` provides the information needed to call the GraphQL API directly. You can also use the Supabase Studio url to access [the builtin GraphiQL IDE](https://app.supabase.com/project/_/api/graphiql).
+When starting a local project through the [Khulnasoft CLI](https://khulnasoft.com/docs/guides/cli), the output of `khulnasoft start` provides the information needed to call the GraphQL API directly. You can also use the Khulnasoft Studio url to access [the builtin GraphiQL IDE](https://app.khulnasoft.com/project/_/api/graphiql).
 
 ```sh
-> supabase start
+> khulnasoft start
 ...
 
-Started supabase local development setup.
+Started khulnasoft local development setup.
 
      GraphQL URL: http://localhost:54321/graphql/v1  <-- GraphQL endpoint
           DB URL: ...
-      Studio URL: http://localhost:54323             <-- Supabase Studio
+      Studio URL: http://localhost:54323             <-- Khulnasoft Studio
     Inbucket URL: ...
       JWT secret: ...
         anon key: eyJhbGciOiJIUzI1...<truncated>     <-- API_KEY
@@ -232,15 +232,15 @@ service_role key: ...
 
 ### Project Reference (PROJECT_REF)
 
-Your Supabase project reference or PROJECT_REF is a 20 digit unique identifier for your project, for example `bvykdyhlwawojivopztl`.
-The project reference is used throughout your supabase application including the project's API URL. You can find the project reference in by logging
-in to Supabase Studio and navigating to `Settings > General > Project Settings > Reference ID`
+Your Khulnasoft project reference or PROJECT_REF is a 20 digit unique identifier for your project, for example `bvykdyhlwawojivopztl`.
+The project reference is used throughout your khulnasoft application including the project's API URL. You can find the project reference in by logging
+in to Khulnasoft Studio and navigating to `Settings > General > Project Settings > Reference ID`
 
-![project_ref](./assets/supabase_project_ref.png)
+![project_ref](./assets/khulnasoft_project_ref.png)
 
 
 ### API Key (API_KEY)
 
-Your Supabase API Key is a public value that must be sent with every API request. The key is visible in Supabase Studio at `Settings > API > Project API keys`
+Your Khulnasoft API Key is a public value that must be sent with every API request. The key is visible in Khulnasoft Studio at `Settings > API > Project API keys`
 
-![project_ref](./assets/supabase_api_key.png)
+![project_ref](./assets/khulnasoft_api_key.png)

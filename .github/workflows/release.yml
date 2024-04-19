@@ -119,7 +119,7 @@ jobs:
           echo 'Package: ${{ matrix.package_name }}' >> ${package_dir}/DEBIAN/control
           echo 'Version:' ${deb_version} >> ${package_dir}/DEBIAN/control
           echo 'Architecture: ${{ matrix.box.arch }}' >> ${package_dir}/DEBIAN/control
-          echo 'Maintainer: supabase' >> ${package_dir}/DEBIAN/control
+          echo 'Maintainer: khulnasoft' >> ${package_dir}/DEBIAN/control
           echo 'Description: A PostgreSQL extension' >> ${package_dir}/DEBIAN/control
 
           # Create deb package

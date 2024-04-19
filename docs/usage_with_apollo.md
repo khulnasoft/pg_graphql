@@ -49,7 +49,7 @@ export default config
 
 ### Configuring Apollo Client
 
-This example uses [Supabase](https://supabase.com) for the GraphQL server, but pg_graphql can be used independently.
+This example uses [Khulnasoft](https://khulnasoft.com) for the GraphQL server, but pg_graphql can be used independently.
 
 ```typescript
 import {
@@ -60,7 +60,7 @@ import {
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import { relayStylePagination } from '@apollo/client/utilities'
-import supabase from './supabase'
+import khulnasoft from './khulnasoft'
 
 const cache = new InMemoryCache({
   dataIdFromObject(responseObject) {
@@ -94,7 +94,7 @@ const httpLink = createHttpLink({
 })
 
 const authLink = setContext(async (_, { headers }) => {
-  const token = (await supabase.auth.getSession()).data.session?.access_token
+  const token = (await khulnasoft.auth.getSession()).data.session?.access_token
 
   return {
     headers: {
