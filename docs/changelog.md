@@ -78,4 +78,17 @@
 ## 1.5.3
 - bugfix: computed field returning a composite type was always null
 
+## 1.5.4
+- bugfix: once a query panics, all subsequent queries return a lock poisoned error.
+
+## 1.5.6
+- feature: add support for filtering on array column types using `contains`, `containedBy`, `overlaps`, `is`, `eq`
+
+## 1.5.7
+- bugfix: UDF argument with a complex default expression was marked as required
+- bugfix: not null foreign keys referencing tables with RLS are marked as nullable
+
+## 1.5.8
+- bugfix: relational query with more than 100 fields fails
+
 ## master

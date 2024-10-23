@@ -4,6 +4,7 @@ use cached::SizedCache;
 use itertools::Itertools;
 use serde::Serialize;
 use std::collections::{HashMap, HashSet};
+use std::fmt::Display;
 use std::ops::Deref;
 use std::sync::Arc;
 
@@ -345,15 +346,6 @@ pub trait ___Field {
     fn deprecation_reason(&self) -> Option<String> {
         None
     }
-
-    fn arg_map(&self) -> HashMap<String, __InputValue> {
-        let mut amap = HashMap::new();
-        let args = self.args();
-        for arg in args {
-            amap.insert(arg.name_.clone(), arg.clone());
-        }
-        amap
-    }
 }
 
 #[derive(Clone, Debug)]
@@ -528,8 +520,10 @@ pub enum __Type {
     // Constant
     PageInfo(PageInfoType),
     // Introspection
+    #[allow(clippy::enum_variant_names)]
     __TypeKind(__TypeKindType),
     __Schema(__SchemaType),
+    #[allow(clippy::enum_variant_names)]
     __Type(__TypeType),
     __Field(__FieldType),
     __InputValue(__InputValueType),
@@ -544,8 +538,7 @@ pub enum __Type {
 #[cached(
     type = "SizedCache<u64, HashMap<String, __Field>>",
     create = "{ SizedCache::with_size(1000) }",
-    convert = r#"{ calculate_hash(type_) }"#,
-    sync_writes = true
+    convert = r#"{ calculate_hash(type_) }"#
 )]
 pub fn field_map(type_: &__Type) -> HashMap<String, __Field> {
     let mut hmap = HashMap::new();
@@ -570,8 +563,7 @@ pub fn field_map(type_: &__Type) -> HashMap<String, __Field> {
 #[cached(
     type = "SizedCache<u64, HashMap<String, __InputValue>>",
     create = "{ SizedCache::with_size(1000) }",
-    convert = r#"{ calculate_hash(type_) }"#,
-    sync_writes = true
+    convert = r#"{ calculate_hash(type_) }"#
 )]
 pub fn input_field_map(type_: &__Type) -> HashMap<String, __InputValue> {
     let mut hmap = HashMap::new();
@@ -1118,6 +1110,7 @@ pub struct OrderByEntityType {
 pub enum FilterableType {
     Scalar(Scalar),
     Enum(EnumType),
+    List(ListType),
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
@@ -1131,6 +1124,13 @@ impl FilterTypeType {
         match &self.entity {
             FilterableType::Scalar(s) => s.name().expect("scalar name should exist"),
             FilterableType::Enum(e) => e.name().expect("enum type name should exist"),
+            FilterableType::List(l) => format!(
+                "{}List",
+                l.of_type()
+                    .expect("inner list type should exist")
+                    .name()
+                    .expect("inner list type name should exist")
+            ),
         }
     }
 }
@@ -1588,7 +1588,7 @@ impl ___Type for Scalar {
                 Self::String(_) => "A string",
                 Self::Boolean => "A value that is true or false",
                 Self::BigInt => "An arbitrary size integer represented as a string",
-                Self::Date => "A date wihout time information",
+                Self::Date => "A date without time information",
                 Self::Time => "A time without date information",
                 Self::Datetime => "A date and time",
                 Self::UUID => "A universally unique identifier",
@@ -1946,12 +1946,19 @@ pub fn sql_column_to_graphql_type(col: &Column, schema: &Arc<__Schema>) -> Optio
 }
 
 impl NodeType {
-    fn foreign_key_type(&self, fkey: &ForeignKey, type_: __Type) -> __Type {
+    fn foreign_key_type(
+        &self,
+        fkey: &ForeignKey,
+        type_: __Type,
+        is_reverse_reference: bool,
+    ) -> __Type {
         if fkey.local_table_meta.column_names.iter().any(|colname| {
             self.table
                 .columns
                 .iter()
                 .any(|c| &c.name == colname && c.is_not_null)
+                && !fkey.referenced_table_meta.is_rls_enabled
+                && !is_reverse_reference
         }) {
             __Type::NonNull(NonNullType {
                 type_: Box::new(type_),
@@ -2120,6 +2127,7 @@ impl ___Type for NodeType {
                     reverse_reference: Some(reverse_reference),
                     schema: Arc::clone(&self.schema),
                 }),
+                reverse_reference,
             );
 
             let relation_field = __Field {
@@ -2173,7 +2181,11 @@ impl ___Type for NodeType {
                     };
                     let connection_args = connection_type.get_connection_input_args();
 
-                    let type_ = self.foreign_key_type(fkey, __Type::Connection(connection_type));
+                    let type_ = self.foreign_key_type(
+                        fkey,
+                        __Type::Connection(connection_type),
+                        reverse_reference,
+                    );
 
                     __Field {
                         name_: self
@@ -2195,6 +2207,7 @@ impl ___Type for NodeType {
                             reverse_reference: Some(reverse_reference),
                             schema: Arc::clone(&self.schema),
                         }),
+                        reverse_reference,
                     );
 
                     __Field {
@@ -3330,11 +3343,14 @@ pub enum FilterOp {
     ILike,
     RegEx,
     IRegEx,
+    Contains,
+    ContainedBy,
+    Overlap,
 }
 
-impl ToString for FilterOp {
-    fn to_string(&self) -> String {
-        match self {
+impl Display for FilterOp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let res = match self {
             Self::Equal => "eq",
             Self::NotEqual => "neq",
             Self::LessThan => "lt",
@@ -3348,8 +3364,11 @@ impl ToString for FilterOp {
             Self::ILike => "ilike",
             Self::RegEx => "regex",
             Self::IRegEx => "iregex",
-        }
-        .to_string()
+            Self::Contains => "contains",
+            Self::ContainedBy => "containedBy",
+            Self::Overlap => "overlaps",
+        };
+        write!(f, "{res}")
     }
 }
 
@@ -3371,6 +3390,9 @@ impl FromStr for FilterOp {
             "ilike" => Ok(Self::ILike),
             "regex" => Ok(Self::RegEx),
             "iregex" => Ok(Self::IRegEx),
+            "contains" => Ok(Self::Contains),
+            "containedBy" => Ok(Self::ContainedBy),
+            "overlaps" => Ok(Self::Overlap),
             _ => Err("Invalid filter operation".to_string()),
         }
     }
@@ -3504,7 +3526,7 @@ impl ___Type for FilterTypeType {
 
                 supported_ops
                     .iter()
-                    .map(|op| match op {
+                    .filter_map(|op| match op {
                         FilterOp::Equal
                         | FilterOp::NotEqual
                         | FilterOp::GreaterThan
@@ -3515,14 +3537,14 @@ impl ___Type for FilterTypeType {
                         | FilterOp::Like
                         | FilterOp::ILike
                         | FilterOp::RegEx
-                        | FilterOp::IRegEx => __InputValue {
+                        | FilterOp::IRegEx => Some(__InputValue {
                             name_: op.to_string(),
                             type_: __Type::Scalar(scalar.clone()),
                             description: None,
                             default_value: None,
                             sql_type: None,
-                        },
-                        FilterOp::In => __InputValue {
+                        }),
+                        FilterOp::In => Some(__InputValue {
                             name_: op.to_string(),
                             type_: __Type::List(ListType {
                                 type_: Box::new(__Type::NonNull(NonNullType {
@@ -3532,8 +3554,8 @@ impl ___Type for FilterTypeType {
                             description: None,
                             default_value: None,
                             sql_type: None,
-                        },
-                        FilterOp::Is => __InputValue {
+                        }),
+                        FilterOp::Is => Some(__InputValue {
                             name_: "is".to_string(),
                             type_: __Type::Enum(EnumType {
                                 enum_: EnumSource::FilterIs,
@@ -3542,7 +3564,9 @@ impl ___Type for FilterTypeType {
                             description: None,
                             default_value: None,
                             sql_type: None,
-                        },
+                        }),
+                        // shouldn't happen since we've covered all cases in supported_ops
+                        FilterOp::Contains | FilterOp::ContainedBy | FilterOp::Overlap => None,
                     })
                     .collect()
             }
@@ -3585,6 +3609,42 @@ impl ___Type for FilterTypeType {
                     },
                 ]
             }
+            FilterableType::List(list_type) => {
+                let supported_ops = [
+                    FilterOp::Contains,
+                    FilterOp::ContainedBy,
+                    FilterOp::Equal,
+                    FilterOp::Overlap,
+                    FilterOp::Is,
+                ];
+
+                supported_ops
+                    .iter()
+                    .map(|op| match op {
+                        FilterOp::Is => __InputValue {
+                            name_: "is".to_string(),
+                            type_: __Type::Enum(EnumType {
+                                enum_: EnumSource::FilterIs,
+                                schema: Arc::clone(&self.schema),
+                            }),
+                            description: None,
+                            default_value: None,
+                            sql_type: None,
+                        },
+                        _ => __InputValue {
+                            name_: op.to_string(),
+                            type_: __Type::List(ListType {
+                                type_: Box::new(__Type::NonNull(NonNullType {
+                                    type_: Box::new(*list_type.type_.clone()),
+                                })),
+                            }),
+                            description: None,
+                            default_value: None,
+                            sql_type: None,
+                        },
+                    })
+                    .collect()
+            }
         };
 
         infields.sort_by_key(|a| a.name());
@@ -3622,14 +3682,11 @@ impl ___Type for FilterEntityType {
             .columns
             .iter()
             .filter(|x| x.permissions.is_selectable)
-            // No filtering on arrays
-            .filter(|x| !x.type_name.ends_with("[]"))
             // No filtering on composites
             .filter(|x| !self.schema.context.is_composite(x.type_oid))
             // No filtering on json/b. they do not support = or <>
             .filter(|x| !["json", "jsonb"].contains(&x.type_name.as_ref()))
             .filter_map(|col| {
-                // Should be a scalar
                 if let Some(utype) = sql_column_to_graphql_type(col, &self.schema) {
                     let column_graphql_name = self.schema.graphql_column_field_name(col);
 
@@ -3643,7 +3700,7 @@ impl ___Type for FilterEntityType {
                         not_column_exists = true;
                     }
 
-                    match utype.unmodified_type() {
+                    match utype.nullable_type() {
                         __Type::Scalar(s) => Some(__InputValue {
                             name_: column_graphql_name,
                             type_: __Type::FilterType(FilterTypeType {
@@ -3654,17 +3711,41 @@ impl ___Type for FilterEntityType {
                             default_value: None,
                             sql_type: Some(NodeSQLType::Column(Arc::clone(col))),
                         }),
-                        // ERROR HERE
-                        __Type::Enum(s) => Some(__InputValue {
+                        __Type::Enum(e) => Some(__InputValue {
                             name_: column_graphql_name,
                             type_: __Type::FilterType(FilterTypeType {
-                                entity: FilterableType::Enum(s),
+                                entity: FilterableType::Enum(e),
                                 schema: Arc::clone(&self.schema),
                             }),
                             description: None,
                             default_value: None,
                             sql_type: Some(NodeSQLType::Column(Arc::clone(col))),
                         }),
+                        __Type::List(l) => match l.type_.nullable_type() {
+                            // Only non-json scalars are supported in list types
+                            __Type::Scalar(
+                                Scalar::Int
+                                | Scalar::Float
+                                | Scalar::String(_)
+                                | Scalar::Boolean
+                                | Scalar::UUID
+                                | Scalar::BigInt
+                                | Scalar::BigFloat
+                                | Scalar::Time
+                                | Scalar::Date
+                                | Scalar::Datetime,
+                            ) => Some(__InputValue {
+                                name_: column_graphql_name,
+                                type_: __Type::FilterType(FilterTypeType {
+                                    entity: FilterableType::List(l),
+                                    schema: Arc::clone(&self.schema),
+                                }),
+                                description: None,
+                                default_value: None,
+                                sql_type: Some(NodeSQLType::Column(Arc::clone(col))),
+                            }),
+                            _ => None,
+                        },
                         _ => None,
                     }
                 } else {
@@ -3831,13 +3912,12 @@ impl ___Type for OrderByEntityType {
                 .columns
                 .iter()
                 .filter(|x| x.permissions.is_selectable)
-                // No filtering on arrays
+                // No ordering by arrays
                 .filter(|x| !x.type_name.ends_with("[]"))
-                // No filtering on composites
+                // No ordering by composites
                 .filter(|x| !self.schema.context.is_composite(x.type_oid))
-                // No filtering on json/b. they do not support = or <>
+                // No ordering by json/b. they do not support = or <>
                 .filter(|x| !["json", "jsonb"].contains(&x.type_name.as_ref()))
-                // TODO  filter out arrays, json and composites
                 .map(|col| __InputValue {
                     name_: self.schema.graphql_column_field_name(col),
                     type_: __Type::OrderBy(OrderByType {}),
@@ -3875,8 +3955,7 @@ pub struct __Schema {
 #[cached(
     type = "SizedCache<String, HashMap<String, __Type>>",
     create = "{ SizedCache::with_size(200) }",
-    convert = r#"{ serde_json::ser::to_string(&schema.context.config).expect("schema config should be a string") }"#,
-    sync_writes = true
+    convert = r#"{ serde_json::ser::to_string(&schema.context.config).expect("schema config should be a string") }"#
 )]
 pub fn type_map(schema: &__Schema) -> HashMap<String, __Type> {
     let tmap: HashMap<String, __Type> = schema
@@ -3969,6 +4048,66 @@ impl __Schema {
             }),
             __Type::FilterType(FilterTypeType {
                 entity: FilterableType::Scalar(Scalar::Opaque),
+                schema: Arc::clone(&schema_rc),
+            }),
+            __Type::FilterType(FilterTypeType {
+                entity: FilterableType::List(ListType {
+                    type_: Box::new(__Type::Scalar(Scalar::Int)),
+                }),
+                schema: Arc::clone(&schema_rc),
+            }),
+            __Type::FilterType(FilterTypeType {
+                entity: FilterableType::List(ListType {
+                    type_: Box::new(__Type::Scalar(Scalar::Float)),
+                }),
+                schema: Arc::clone(&schema_rc),
+            }),
+            __Type::FilterType(FilterTypeType {
+                entity: FilterableType::List(ListType {
+                    type_: Box::new(__Type::Scalar(Scalar::String(None))),
+                }),
+                schema: Arc::clone(&schema_rc),
+            }),
+            __Type::FilterType(FilterTypeType {
+                entity: FilterableType::List(ListType {
+                    type_: Box::new(__Type::Scalar(Scalar::Boolean)),
+                }),
+                schema: Arc::clone(&schema_rc),
+            }),
+            __Type::FilterType(FilterTypeType {
+                entity: FilterableType::List(ListType {
+                    type_: Box::new(__Type::Scalar(Scalar::Date)),
+                }),
+                schema: Arc::clone(&schema_rc),
+            }),
+            __Type::FilterType(FilterTypeType {
+                entity: FilterableType::List(ListType {
+                    type_: Box::new(__Type::Scalar(Scalar::Time)),
+                }),
+                schema: Arc::clone(&schema_rc),
+            }),
+            __Type::FilterType(FilterTypeType {
+                entity: FilterableType::List(ListType {
+                    type_: Box::new(__Type::Scalar(Scalar::Datetime)),
+                }),
+                schema: Arc::clone(&schema_rc),
+            }),
+            __Type::FilterType(FilterTypeType {
+                entity: FilterableType::List(ListType {
+                    type_: Box::new(__Type::Scalar(Scalar::BigInt)),
+                }),
+                schema: Arc::clone(&schema_rc),
+            }),
+            __Type::FilterType(FilterTypeType {
+                entity: FilterableType::List(ListType {
+                    type_: Box::new(__Type::Scalar(Scalar::UUID)),
+                }),
+                schema: Arc::clone(&schema_rc),
+            }),
+            __Type::FilterType(FilterTypeType {
+                entity: FilterableType::List(ListType {
+                    type_: Box::new(__Type::Scalar(Scalar::BigFloat)),
+                }),
                 schema: Arc::clone(&schema_rc),
             }),
             __Type::Query(QueryType {

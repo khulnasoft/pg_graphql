@@ -714,6 +714,9 @@ impl FilterBuilderElem {
                     _ => {
                         let cast_type_name = match op {
                             FilterOp::In => format!("{}[]", column.type_name),
+                            FilterOp::Contains => format!("{}[]", column.type_name),
+                            FilterOp::ContainedBy => format!("{}[]", column.type_name),
+                            FilterOp::Overlap => format!("{}[]", column.type_name),
                             _ => column.type_name.clone(),
                         };
 
@@ -735,6 +738,9 @@ impl FilterBuilderElem {
                                 FilterOp::ILike => "ilike",
                                 FilterOp::RegEx => "~",
                                 FilterOp::IRegEx => "~*",
+                                FilterOp::Contains => "@>",
+                                FilterOp::ContainedBy => "<@",
+                                FilterOp::Overlap => "&&",
                                 FilterOp::Is => {
                                     return Err("Error transpiling Is filter".to_string());
                                 }
@@ -1281,7 +1287,12 @@ impl NodeBuilder {
             .map(|x| x.to_sql(&quoted_block_name, param_context))
             .collect::<Result<Vec<_>, _>>()?;
 
-        let object_clause = frags.join(", ");
+        let object_clause: Vec<String> = frags
+            .chunks(50)
+            .map(|chunks| format!("jsonb_build_object({})", chunks.join(", ")))
+            .collect();
+
+        let object_clause_string = object_clause.join(" || ").to_string();
 
         let join_clause = self.table.to_join_clause(
             fkey,
@@ -1294,7 +1305,7 @@ impl NodeBuilder {
             "
             (
                 select
-                    jsonb_build_object({object_clause})
+                    {object_clause_string}
                 from
                     {quoted_schema}.{quoted_table} as {quoted_block_name}
                 where

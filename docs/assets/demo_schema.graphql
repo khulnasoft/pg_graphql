@@ -125,6 +125,17 @@ input BigFloatFilter {
   neq: BigFloat
 }
 
+"""
+Boolean expression comparing fields on type "BigFloatList"
+"""
+input BigFloatListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
 """An arbitrary size integer represented as a string"""
 scalar BigInt
 
@@ -142,6 +153,17 @@ input BigIntFilter {
   neq: BigInt
 }
 
+"""
+Boolean expression comparing fields on type "BigIntList"
+"""
+input BigIntListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
 type Blog implements Node {
   """Globally Unique Record Identifier"""
   nodeId: ID!
@@ -149,6 +171,7 @@ type Blog implements Node {
   ownerId: Int!
   name: String!
   description: String
+  tags: [String]
   createdAt: Datetime!
   updatedAt: Datetime!
   owner: Account!
@@ -201,6 +224,7 @@ input BlogFilter {
   ownerId: IntFilter
   name: StringFilter
   description: StringFilter
+  tags: StringListFilter
   createdAt: DatetimeFilter
   updatedAt: DatetimeFilter
   nodeId: IDFilter
@@ -385,11 +409,22 @@ input BooleanFilter {
 }
 
 """
+Boolean expression comparing fields on type "BooleanList"
+"""
+input BooleanListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
+"""
 An opaque string using for tracking a position in results during pagination
 """
 scalar Cursor
 
-"""A date wihout time information"""
+"""A date without time information"""
 scalar Date
 
 """
@@ -404,6 +439,17 @@ input DateFilter {
   lt: Date
   lte: Date
   neq: Date
+}
+
+"""
+Boolean expression comparing fields on type "DateList"
+"""
+input DateListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
 }
 
 """A date and time"""
@@ -421,6 +467,17 @@ input DatetimeFilter {
   lt: Datetime
   lte: Datetime
   neq: Datetime
+}
+
+"""
+Boolean expression comparing fields on type "DatetimeList"
+"""
+input DatetimeListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
 }
 
 enum FilterIs {
@@ -443,6 +500,17 @@ input FloatFilter {
 }
 
 """
+Boolean expression comparing fields on type "FloatList"
+"""
+input FloatListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
+"""
 Boolean expression comparing fields on type "ID"
 """
 input IDFilter {
@@ -461,6 +529,17 @@ input IntFilter {
   lt: Int
   lte: Int
   neq: Int
+}
+
+"""
+Boolean expression comparing fields on type "IntList"
+"""
+input IntListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
 }
 
 """A Javascript Object Notation value serialized as a string"""
@@ -703,6 +782,17 @@ input StringFilter {
   startsWith: String
 }
 
+"""
+Boolean expression comparing fields on type "StringList"
+"""
+input StringListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
 """A time without date information"""
 scalar Time
 
@@ -720,6 +810,17 @@ input TimeFilter {
   neq: Time
 }
 
+"""
+Boolean expression comparing fields on type "TimeList"
+"""
+input TimeListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
 """A universally unique identifier"""
 scalar UUID
 
@@ -731,4 +832,15 @@ input UUIDFilter {
   in: [UUID!]
   is: FilterIs
   neq: UUID
+}
+
+"""
+Boolean expression comparing fields on type "UUIDList"
+"""
+input UUIDListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
 }

@@ -263,10 +263,12 @@ impl<'a> ArgsIterator<'a> {
 
     fn sql_to_graphql_default(default_str: &str, type_oid: u32) -> Option<DefaultValue> {
         let trimmed = default_str.trim();
+
         if trimmed.starts_with("NULL::") {
             return Some(DefaultValue::Null);
         }
-        match type_oid {
+
+        let res = match type_oid {
             21 | 23 => trimmed
                 .parse::<i32>()
                 .ok()
@@ -283,6 +285,16 @@ impl<'a> ArgsIterator<'a> {
                 DefaultValue::NonNull(format!("\"{}\"", i.trim_matches(',').trim_matches('\'')))
             }),
             _ => None,
+        };
+
+        // return the non-parsed value as default if for whatever reason the default value can't
+        // be parsed into a value of the required type. This fixes problems where the default
+        // is a complex expression like a function call etc. See test/sql/issue_533.sql for
+        // a test case for this scenario.
+        if res.is_some() {
+            res
+        } else {
+            Some(DefaultValue::Null)
         }
     }
 }
@@ -413,6 +425,7 @@ pub struct ForeignKeyTableInfo {
     // The table's actual name
     pub name: String,
     pub schema: String,
+    pub is_rls_enabled: bool,
     pub column_names: Vec<String>,
 }
 
@@ -491,6 +504,7 @@ pub struct Table {
     pub schema: String,
     pub columns: Vec<Arc<Column>>,
     pub comment: Option<String>,
+    pub is_rls_enabled: bool,
     pub relkind: String, // r = table, v = view, m = mat view, f = foreign table
     pub reltype: u32,
     pub permissions: TablePermissions,
@@ -648,12 +662,14 @@ impl Context {
                         oid: table.oid,
                         name: table.name.clone(),
                         schema: table.schema.clone(),
+                        is_rls_enabled: table.is_rls_enabled,
                         column_names: directive_fkey.local_columns.clone(),
                     },
                     referenced_table_meta: ForeignKeyTableInfo {
                         oid: referenced_t.oid,
                         name: referenced_t.name.clone(),
                         schema: referenced_t.schema.clone(),
+                        is_rls_enabled: table.is_rls_enabled,
                         column_names: directive_fkey.foreign_columns.clone(),
                     },
                     directives: ForeignKeyDirectives {
@@ -661,8 +677,6 @@ impl Context {
                         foreign_name: directive_fkey.foreign_name.clone(),
                     },
                 };
-
-                //panic!("{:?}, {}", fk, self.fkey_is_selectable(&fk));
 
                 fkeys.push(Arc::new(fk));
             }
@@ -791,8 +805,7 @@ pub fn calculate_hash<T: Hash>(t: &T) -> u64 {
 #[cached(
     type = "SizedCache<u64, Result<Arc<Context>, String>>",
     create = "{ SizedCache::with_size(250) }",
-    convert = r#"{ calculate_hash(_config) }"#,
-    sync_writes = true
+    convert = r#"{ calculate_hash(_config) }"#
 )]
 pub fn load_sql_context(_config: &Config) -> Result<Arc<Context>, String> {
     // cache value for next query

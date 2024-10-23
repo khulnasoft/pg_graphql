@@ -3,14 +3,16 @@ begin;
         id int primary key,
         is_verified bool,
         name text,
-        phone text
+        phone text,
+        tags text[]
     );
 
-    insert into public.account(id, is_verified, name, phone)
+    insert into public.account(id, is_verified, name, phone, tags)
     values
-        (1, true, 'foo', '1111111111'),
-        (2, true, 'bar', null),
-        (3, false, 'baz', '33333333333');
+        (1, true, 'foo', '1111111111', '{"customer", "priority"}'),
+        (2, true, 'bar', null, '{"customer"}'),
+        (3, false, 'baz', '33333333333', '{"lead", "priority"}'),
+        (4, false, 'qui', '4585858', null);
 
     savepoint a;
 
@@ -120,6 +122,101 @@ begin;
     -- is - null literal returns error (this may change but currently seems like the best option and "unbreaking" it is backwards compatible)
     select graphql.resolve($${accountCollection(filter: {phone: {is: null}}) { edges { node { id } } }}$$);
     rollback to savepoint a;
+
+    -- contains - array column contains the input scalar
+    select jsonb_pretty(
+        graphql.resolve($$
+            {
+              accountCollection(filter: {tags: {contains: "customer"}}) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+        $$)
+    );
+    rollback to savepoint a;
+
+    -- containedBy - array column is contained by input scalar (aka, the only value in the array column is the input scalar)
+    select jsonb_pretty(
+        graphql.resolve($$
+            {
+              accountCollection(filter: {tags: {containedBy: "customer"}}) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+        $$)
+    );
+    rollback to savepoint a;
+
+    -- contains - array column contains the input array
+    select jsonb_pretty(
+        graphql.resolve($$
+            {
+              accountCollection(filter: {tags: {contains: ["customer", "priority"]}}) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+        $$)
+    );
+    rollback to savepoint a;
+
+    -- containedByd - array column is contained by input array
+    select jsonb_pretty(
+        graphql.resolve($$
+            {
+              accountCollection(filter: {tags: {containedBy: ["customer", "priority"]}}) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+        $$)
+    );
+    rollback to savepoint a;
+
+    -- overlaps - array column overlaps with input array
+    select jsonb_pretty(
+        graphql.resolve($$
+            {
+              accountCollection(filter: {tags: {overlaps: ["customer", "priority"]}}) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+        $$)
+    );
+    rollback to savepoint a;
+
+    -- is - array column is NULL/NOT_NULL
+    select jsonb_pretty(
+        graphql.resolve($$
+            {
+              accountCollection(filter: {tags: {is: NULL}}) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+        $$)
+    );
 
     -- variable is - is null
     select graphql.resolve($$query AAA($nis: FilterIs) { accountCollection(filter: {phone: {is: $nis}}) { edges { node { id } } }}$$, '{"nis": "NULL"}');
