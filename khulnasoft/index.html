@@ -1,0 +1,1266 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A PostgreSQL extension adding GraphQL support">
+      
+      
+      
+        <link rel="canonical" href="https://khulnasoft.github.io/pg_graphql/khulnasoft/">
+      
+      
+        <link rel="prev" href="../configuration/">
+      
+      
+        <link rel="next" href="../usage_with_apollo/">
+      
+      
+      <link rel="icon" href="../assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.42">
+    
+    
+      
+        <title>Khulnasoft - pg_graphql</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="light-green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#quickstart" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="pg_graphql" class="md-header__button md-logo" aria-label="pg_graphql" data-md-component="logo">
+      
+  <img src="../assets/favicon.ico" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pg_graphql
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Khulnasoft
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/khulnasoft/pg_graphql" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    khulnasoft/pg_graphql
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pg_graphql" class="md-nav__button md-logo" aria-label="pg_graphql" data-md-component="logo">
+      
+  <img src="../assets/favicon.ico" alt="logo">
+
+    </a>
+    pg_graphql
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/khulnasoft/pg_graphql" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    khulnasoft/pg_graphql
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Welcome
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quickstart
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql_interface/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SQL Interface
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../views/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Views
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Functions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../computed_fields/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Computed Fields
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Khulnasoft
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Khulnasoft
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quickstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quickstart
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clients" class="md-nav__link">
+    <span class="md-ellipsis">
+      Clients
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Clients">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#khulnasoft-studio" class="md-nav__link">
+    <span class="md-ellipsis">
+      Khulnasoft Studio
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTTP Request
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#curl" class="md-nav__link">
+    <span class="md-ellipsis">
+      cURL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#khulnasoft-js" class="md-nav__link">
+    <span class="md-ellipsis">
+      khulnasoft-js
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graphiql" class="md-nav__link">
+    <span class="md-ellipsis">
+      GraphiQL
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema-table-visibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema &amp; Table Visibility
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema & Table Visibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#remove-a-table-from-the-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Remove a Table from the API
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-a-schema-to-the-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a Schema to the API
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version Management
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#local-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Local Development
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#term-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Term Reference
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Term Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#project-reference-project_ref" class="md-nav__link">
+    <span class="md-ellipsis">
+      Project Reference (PROJECT_REF)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-key-api_key" class="md-nav__link">
+    <span class="md-ellipsis">
+      API Key (API_KEY)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage_with_apollo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Usage with Apollo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage_with_relay/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Usage with Relay
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../example_schema/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Example Schema
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quickstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quickstart
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clients" class="md-nav__link">
+    <span class="md-ellipsis">
+      Clients
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Clients">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#khulnasoft-studio" class="md-nav__link">
+    <span class="md-ellipsis">
+      Khulnasoft Studio
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTTP Request
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#curl" class="md-nav__link">
+    <span class="md-ellipsis">
+      cURL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#khulnasoft-js" class="md-nav__link">
+    <span class="md-ellipsis">
+      khulnasoft-js
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graphiql" class="md-nav__link">
+    <span class="md-ellipsis">
+      GraphiQL
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema-table-visibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema &amp; Table Visibility
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema & Table Visibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#remove-a-table-from-the-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Remove a Table from the API
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-a-schema-to-the-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a Schema to the API
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version Management
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#local-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Local Development
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#term-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Term Reference
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Term Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#project-reference-project_ref" class="md-nav__link">
+    <span class="md-ellipsis">
+      Project Reference (PROJECT_REF)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-key-api_key" class="md-nav__link">
+    <span class="md-ellipsis">
+      API Key (API_KEY)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>Khulnasoft</h1>
+
+<p>The Khulnasoft GraphQL API is automatically reflected from your database's schema using <a href="https://github.com/khulnasoft/pg_graphql">pg_graphql</a>. It supports:</p>
+<ul>
+<li>Basic CRUD operations (Create/Read/Update/Delete)</li>
+<li>Support for Tables, Views, Materialized Views, and Foreign Tables</li>
+<li>Arbitrarily deep relationships among tables/views</li>
+<li>User defined computed fields</li>
+<li>Postgres' security model - including Row Level Security, Roles, and Grants</li>
+</ul>
+<p>All requests resolve in a single round-trip leading to fast response times and high throughput.</p>
+<p>If you haven't created a Khulnasoft project, do that <a href="https://database.new">here</a> so you can follow along with the guide.</p>
+<h2 id="quickstart">Quickstart</h2>
+<p><code>https://&lt;PROJECT_REF&gt;.khulnasoft.co/graphql/v1</code> is your project's GraphQL API endpoint. See <a href="#project-reference-project_ref">PROJECT_REF</a> for instructions on finding your project's reference. Note that the url does not allow a trailing <code>/</code>.</p>
+<p>To access the API you MUST provide your project's <a href="#api-key-api_key">API key</a> as a header in every request. For example see line 2 of the cURL request below.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://&lt;PROJECT_REF&gt;.khulnasoft.co/graphql/v1<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-H<span class="w"> </span><span class="s1">&#39;apiKey: &lt;API_KEY&gt;&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--data-raw<span class="w"> </span><span class="s1">&#39;{&quot;query&quot;: &quot;{ accountCollection(first: 1) { edges { node { id } } } }&quot;, &quot;variables&quot;: {}}&#39;</span>
+</code></pre></div></td></tr></table></div>
+<p>For user authentication, pass an <code>Authorization</code> header e.g.
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>    -H &#39;Authorization: Bearer &lt;JWT&gt;&#39;
+</code></pre></div></td></tr></table></div>
+See the <a href="https://khulnasoft.com/docs/guides/auth/auth-email">auth docs</a> to understand how to sign-up/sign-in users to your application and retrieve a JWT. The <a href="../usage_with_apollo/">apollo</a> and <a href="../usage_with_relay/">relay</a> guides also include complete examples of using Khulnasoft Auth with GraphQL. Khulnasoft Auth works with <a href="https://khulnasoft.com/docs/guides/auth/row-level-security">row level security (RLS)</a> allowing you to control which users can access tables/rows.</p>
+<p>The fastest way to get started with GraphQL on Khulnasoft is using the <a href="#khulnasoft-studio">GraphQL IDE (GraphiQL) built directly into Khulnasoft Studio</a>.</p>
+<h2 id="clients">Clients</h2>
+<p>If you're new to GraphQL or Khulnasoft, we strongly recommend starting with Khulnasoft GraphQL by following the <a href="#khulnasoft-studio">Khulnasoft Studio guide</a>.</p>
+<p>For more experienced users, or when you're ready to productionize your application, access the API using <a href="#khulnasoft-js">khulnasoft-js</a>, <a href="#connecting-graphiql">GraphiQL</a>, or any HTTP client, for example <a href="#curl">cURL</a>.</p>
+<h3 id="khulnasoft-studio">Khulnasoft Studio</h3>
+<p>The easiest way to make a GraphQL request with Khulnasoft is to use <a href="https://app.khulnasoft.com/project/_/api/graphiql">Khulnasoft Studio's builtin GraphiQL IDE</a>.
+You can access GraphiQL <a href="https://app.khulnasoft.com/project/_/api/graphiql">here</a> by selecting the relevant project. Alternatively, navigate there within Studio at <code>API Docs &gt; GraphQL &gt; GraphiQL</code>.</p>
+<p><img alt="graphiql" src="../assets/khulnasoft_graphiql.png" /></p>
+<p>Type queries in the central query editor and use the green icon to submit requests to the server. Results are shown in the output display to the right of the editor.</p>
+<p>To explore the API visually, select the docs icon shown below and navigate through each type to see how they connect to the Graph.</p>
+<p><img alt="graphiql" src="../assets/khulnasoft_graphiql_explore.png" /></p>
+<p>pg_graphql mirrors the structure of the project's SQL schema in the GraphQL API. If your project is new and empty, the GraphQL API will be empty as well, with the exception of basic introspection types. For a more interesting result, go to the SQL or table editor and create a table.</p>
+<p><img alt="graphiql" src="../assets/khulnasoft_sql_editor.png" /></p>
+<p>Head back to GraphiQL to see the new table reflected in your GraphQL API's Query and Mutation types.</p>
+<p><img alt="graphiql" src="../assets/khulnasoft_graphiql_query_table.png" /></p>
+<p>If you'd like your type and field names to match the GraphQL convention of <code>PascalCase</code> for types and <code>camelCase</code> for fields, check out the <a href="../configuration/#inflection">pg_graphql inflection guide</a>.</p>
+<h3 id="http-request">HTTP Request</h3>
+<p>To access the GraphQL API over HTTP, first collect your <a href="#project-reference-project_ref">project reference</a> and <a href="#api-key-api_key">API Key</a>.</p>
+<h3 id="curl">cURL</h3>
+<p>To hit the Khulnasoft GraphQL API using cURL, submit a <code>POST</code> request to your GraphQL API's URL shown below, substituting in your <a href="#project-reference-project_ref">PROJECT_REF</a> and passing the project's <a href="#api-key-api_key">API_KEY</a> as the <code>apiKey</code> header:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://&lt;PROJECT_REF&gt;.khulnasoft.co/graphql/v1<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-H<span class="w"> </span><span class="s1">&#39;apiKey: &lt;API_KEY&gt;&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--data-raw<span class="w"> </span><span class="s1">&#39;{&quot;query&quot;: &quot;{ accountCollection(first: 1) { edges { node { id } } } }&quot;, &quot;variables&quot;: {}}&#39;</span>
+</code></pre></div></td></tr></table></div>
+<p>In that example, the GraphQL <code>query</code> is
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="n">accountCollection</span><span class="p">(</span><span class="n">first</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">edges</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">node</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">id</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<p>and there are no <code>variables</code>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{}</span>
+</code></pre></div></td></tr></table></div></p>
+<h3 id="khulnasoft-js">khulnasoft-js</h3>
+<p>The JS ecosystem supports multiple prominent GraphQL frameworks. <a href="https://khulnasoft.com/docs/reference/javascript/introduction">khulnasoft-js</a> is unopinionated about your GraphQL tooling and can integrate with all of them.</p>
+<p>For an example integration, check out the <a href="../usage_with_relay/">Relay guide</a>, complete with Khulnasoft Auth support.</p>
+<h3 id="graphiql">GraphiQL</h3>
+<p>If you'd prefer to connect to Khulnasoft GraphQL using an external IDE like GraphiQL, save the HTML snippet below as <code>khulnasoft_graphiql.html</code> and open it in your browser. Be sure to substitute in your <a href="#project-reference-project_ref">PROJECT_REF</a> and <a href="#api-key-api_key">API_KEY</a> beneath the <code>EDIT BELOW</code> comment:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>GraphiQL<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;https://cdnjs.cloudflare.com/ajax/libs/graphiql/2.4.7/graphiql.css&quot;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="p">/&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;margin: 0;&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;graphiql&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;height: 100vh;&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">crossorigin</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://unpkg.com/react@18/umd/react.production.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">crossorigin</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://unpkg.com/react-dom@18/umd/react-dom.production.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span>
+      <span class="na">crossorigin</span>
+      <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://cdnjs.cloudflare.com/ajax/libs/graphiql/2.4.7/graphiql.js&quot;</span>
+    <span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+
+<span class="w">      </span><span class="c1">////////////////</span>
+<span class="w">      </span><span class="c1">// EDIT BELOW //</span>
+<span class="w">      </span><span class="c1">////////////////</span>
+
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">fetcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">GraphiQL</span><span class="p">.</span><span class="nx">createFetcher</span><span class="p">({</span>
+<span class="w">        </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;https://&lt;PROJECT_REF&gt;.khulnasoft.co/graphql/v1&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="s2">&quot;apiKey&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;&lt;API_KEY&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="w">      </span><span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+<span class="w">        </span><span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="nx">GraphiQL</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">fetcher</span><span class="o">:</span><span class="w"> </span><span class="nx">fetcher</span><span class="w"> </span><span class="p">}),</span>
+<span class="w">        </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;graphiql&#39;</span><span class="p">),</span>
+<span class="w">      </span><span class="p">);</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div></td></tr></table></div>
+<h2 id="schema-table-visibility">Schema &amp; Table Visibility</h2>
+<p>pg_graphql uses Postgres' <code>search_path</code> and permissions system to determine which schemas and entities are exposed in the GraphQL schema. By default on Khulnasoft, tables, views, and functions in the <code>public</code> schema are visible to anonymous (<code>anon</code>) and logged in (<code>authenticated</code>) roles.</p>
+<h3 id="remove-a-table-from-the-api">Remove a Table from the API</h3>
+<p>To remove a table from the GraphQL API, you can revoke permission on that table from the the relevant role. For example, to remove table <code>foo</code> from the API for anonymous users you could run:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">revoke</span><span class="w"> </span><span class="k">all</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="n">foo</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">anon</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+<p>You can similarly revoke permissions using the more granular <code>insert</code>, <code>update</code>, <code>delete</code>, and <code>truncate</code> permissions to remove individual entrypoints in the GraphQL API. For example, revoking <code>update</code> permission removes the <code>updateFooCollection</code> entrypoing in the API's <code>Mutation</code> type.</p>
+<h3 id="add-a-schema-to-the-api">Add a Schema to the API</h3>
+<p>Adding a schema to the GraphQL API is a two step process.</p>
+<p>First, we need to add the new schema to the API search path. In the example below, we add a comma separated value for the new <code>app</code> schema:</p>
+<p><img alt="add_schema" src="../assets/khulnasoft_add_schema.png" /></p>
+<p>Next, make sure the schema and entities (tables/views/functions) that you intend to expose are accessible by the relevant roles. For example, to match permissions from the public schema:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">grant</span><span class="w"> </span><span class="k">usage</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">schema</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">anon</span><span class="p">,</span><span class="w"> </span><span class="n">authenticated</span><span class="p">,</span><span class="w"> </span><span class="n">service_role</span><span class="p">;</span>
+<span class="k">grant</span><span class="w"> </span><span class="k">all</span><span class="w"> </span><span class="k">privileges</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">all</span><span class="w"> </span><span class="n">tables</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">schema</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">anon</span><span class="p">,</span><span class="w"> </span><span class="n">authenticated</span><span class="p">,</span><span class="w"> </span><span class="n">service_role</span><span class="p">;</span>
+<span class="k">grant</span><span class="w"> </span><span class="k">all</span><span class="w"> </span><span class="k">privileges</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">all</span><span class="w"> </span><span class="n">routines</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">schema</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">anon</span><span class="p">,</span><span class="w"> </span><span class="n">authenticated</span><span class="p">,</span><span class="w"> </span><span class="n">service_role</span><span class="p">;</span>
+<span class="k">grant</span><span class="w"> </span><span class="k">all</span><span class="w"> </span><span class="k">privileges</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">all</span><span class="w"> </span><span class="n">sequences</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">schema</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">anon</span><span class="p">,</span><span class="w"> </span><span class="n">authenticated</span><span class="p">,</span><span class="w"> </span><span class="n">service_role</span><span class="p">;</span>
+<span class="k">alter</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="k">privileges</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">role</span><span class="w"> </span><span class="n">postgres</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">schema</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="k">grant</span><span class="w"> </span><span class="k">all</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">tables</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">anon</span><span class="p">,</span><span class="w"> </span><span class="n">authenticated</span><span class="p">,</span><span class="w"> </span><span class="n">service_role</span><span class="p">;</span>
+<span class="k">alter</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="k">privileges</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">role</span><span class="w"> </span><span class="n">postgres</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">schema</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="k">grant</span><span class="w"> </span><span class="k">all</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">routines</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">anon</span><span class="p">,</span><span class="w"> </span><span class="n">authenticated</span><span class="p">,</span><span class="w"> </span><span class="n">service_role</span><span class="p">;</span>
+<span class="k">alter</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="k">privileges</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">role</span><span class="w"> </span><span class="n">postgres</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">schema</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="k">grant</span><span class="w"> </span><span class="k">all</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">sequences</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">anon</span><span class="p">,</span><span class="w"> </span><span class="n">authenticated</span><span class="p">,</span><span class="w"> </span><span class="n">service_role</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+<p>Note that in practice you likely prefer a more secure set of permissions, particularly for anonymous API users.</p>
+<h2 id="version-management">Version Management</h2>
+<p>To maximize stability, you are in control of when to upgrade your GraphQL API.
+To see which version of pg_graphql you have, and the highest upgrade version available, execute:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pg_available_extensions</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;pg_graphql&#39;</span>
+</code></pre></div></td></tr></table></div>
+<p>Which returns a table, for example:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>default_version</th>
+<th>installed_version</th>
+<th>comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pg_graphql</td>
+<td>1.2.0</td>
+<td>1.1.0</td>
+<td>GraphQL support</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>default_version</code> is the highest version available on your database. The <code>installed_version</code> is the version currently enabled in your database.
+If the two differ, as in the example, you can upgrade your installed version by running:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">drop</span><span class="w"> </span><span class="n">extension</span><span class="w"> </span><span class="n">pg_graphql</span><span class="p">;</span><span class="w">   </span><span class="c1">-- drop version 1.1.0</span>
+<span class="k">create</span><span class="w"> </span><span class="n">extension</span><span class="w"> </span><span class="n">pg_graphql</span><span class="p">;</span><span class="w"> </span><span class="c1">-- install default version 1.2.0</span>
+</code></pre></div></td></tr></table></div>
+<p>To upgrade your GraphQL API with 0 downtime.</p>
+<p>When making a decision to upgrade, you can review features of the upgraded version in the <a href="../changelog/">changelog</a>.</p>
+<p>Always test a new version of pg_graphql extensively on a development or staging instance before updating your production instance. pg_graphql follows SemVer, which makes API backwards compatibility relatively safe for minor and patch updates. Even so, it's critical to verify that changes do not negatively impact the specifics of your project's API in other ways, e.g. requests/sec or CPU load.</p>
+<h2 id="local-development">Local Development</h2>
+<p>When starting a local project through the <a href="https://khulnasoft.com/docs/guides/cli">Khulnasoft CLI</a>, the output of <code>khulnasoft start</code> provides the information needed to call the GraphQL API directly. You can also use the Khulnasoft Studio url to access <a href="https://app.khulnasoft.com/project/_/api/graphiql">the builtin GraphiQL IDE</a>.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code>&gt;<span class="w"> </span>khulnasoft<span class="w"> </span>start
+...
+
+Started<span class="w"> </span>khulnasoft<span class="w"> </span><span class="nb">local</span><span class="w"> </span>development<span class="w"> </span>setup.
+
+<span class="w">     </span>GraphQL<span class="w"> </span>URL:<span class="w"> </span>http://localhost:54321/graphql/v1<span class="w">  </span>&lt;--<span class="w"> </span>GraphQL<span class="w"> </span>endpoint
+<span class="w">          </span>DB<span class="w"> </span>URL:<span class="w"> </span>...
+<span class="w">      </span>Studio<span class="w"> </span>URL:<span class="w"> </span>http://localhost:54323<span class="w">             </span>&lt;--<span class="w"> </span>Khulnasoft<span class="w"> </span>Studio
+<span class="w">    </span>Inbucket<span class="w"> </span>URL:<span class="w"> </span>...
+<span class="w">      </span>JWT<span class="w"> </span>secret:<span class="w"> </span>...
+<span class="w">        </span>anon<span class="w"> </span>key:<span class="w"> </span>eyJhbGciOiJIUzI1...&lt;truncated&gt;<span class="w">     </span>&lt;--<span class="w"> </span>API_KEY
+service_role<span class="w"> </span>key:<span class="w"> </span>...
+</code></pre></div></td></tr></table></div>
+<h2 id="term-reference">Term Reference</h2>
+<h3 id="project-reference-project_ref">Project Reference (PROJECT_REF)</h3>
+<p>Your Khulnasoft project reference or PROJECT_REF is a 20 digit unique identifier for your project, for example <code>bvykdyhlwawojivopztl</code>.
+The project reference is used throughout your khulnasoft application including the project's API URL. You can find the project reference in by logging
+in to Khulnasoft Studio and navigating to <code>Settings &gt; General &gt; Project Settings &gt; Reference ID</code></p>
+<p><img alt="project_ref" src="../assets/khulnasoft_project_ref.png" /></p>
+<h3 id="api-key-api_key">API Key (API_KEY)</h3>
+<p>Your Khulnasoft API Key is a public value that must be sent with every API request. The key is visible in Khulnasoft Studio at <code>Settings &gt; API &gt; Project API keys</code></p>
+<p><img alt="project_ref" src="../assets/khulnasoft_api_key.png" /></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+    
+  </body>
+</html>

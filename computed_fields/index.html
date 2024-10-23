@@ -1,0 +1,1837 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A PostgreSQL extension adding GraphQL support">
+      
+      
+      
+        <link rel="canonical" href="https://khulnasoft.github.io/pg_graphql/computed_fields/">
+      
+      
+        <link rel="prev" href="../functions/">
+      
+      
+        <link rel="next" href="../security/">
+      
+      
+      <link rel="icon" href="../assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.42">
+    
+    
+      
+        <title>Computed Fields - pg_graphql</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="light-green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#computed-values" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="pg_graphql" class="md-header__button md-logo" aria-label="pg_graphql" data-md-component="logo">
+      
+  <img src="../assets/favicon.ico" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pg_graphql
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Computed Fields
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/khulnasoft/pg_graphql" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    khulnasoft/pg_graphql
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pg_graphql" class="md-nav__button md-logo" aria-label="pg_graphql" data-md-component="logo">
+      
+  <img src="../assets/favicon.ico" alt="logo">
+
+    </a>
+    pg_graphql
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/khulnasoft/pg_graphql" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    khulnasoft/pg_graphql
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Welcome
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quickstart
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql_interface/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SQL Interface
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../views/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Views
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Functions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Computed Fields
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Computed Fields
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#computed-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      Computed Values
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Computed Values">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql-builtin-preferred" class="md-nav__link">
+    <span class="md-ellipsis">
+      PostgreSQL Builtin (Preferred)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extending-types-with-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extending Types with Functions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#computed-relationships" class="md-nav__link">
+    <span class="md-ellipsis">
+      Computed Relationships
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Computed Relationships">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#to-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      To-One
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to-many" class="md-nav__link">
+    <span class="md-ellipsis">
+      To-Many
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../khulnasoft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Khulnasoft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage_with_apollo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Usage with Apollo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage_with_relay/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Usage with Relay
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../example_schema/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Example Schema
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#computed-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      Computed Values
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Computed Values">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql-builtin-preferred" class="md-nav__link">
+    <span class="md-ellipsis">
+      PostgreSQL Builtin (Preferred)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extending-types-with-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extending Types with Functions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#computed-relationships" class="md-nav__link">
+    <span class="md-ellipsis">
+      Computed Relationships
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Computed Relationships">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#to-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      To-One
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to-many" class="md-nav__link">
+    <span class="md-ellipsis">
+      To-Many
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>Computed Fields</h1>
+
+<h2 id="computed-values">Computed Values</h2>
+<h3 id="postgresql-builtin-preferred">PostgreSQL Builtin (Preferred)</h3>
+<p>PostgreSQL has a builtin method for adding <a href="https://www.postgresql.org/docs/14/ddl-generated-columns.html">generated columns</a> to tables. Generated columns are reflected identically to non-generated columns. This is the recommended approach to adding computed fields when your computation meets the restrictions. Namely:</p>
+<ul>
+<li>expression must be immutable</li>
+<li>expression may only reference the current row</li>
+</ul>
+<p>For example:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">begin</span><span class="p">;</span>
+<span class="w">    </span><span class="k">comment</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">schema</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="s1">&#39;@graphql({&quot;inflect_names&quot;: true})&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="n">account</span><span class="p">(</span>
+<span class="w">        </span><span class="n">id</span><span class="w"> </span><span class="nb">serial</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span>
+<span class="w">        </span><span class="n">first_name</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span>
+<span class="w">        </span><span class="n">last_name</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span>
+<span class="w">        </span><span class="c1">-- Computed Column</span>
+<span class="w">        </span><span class="n">full_name</span><span class="w"> </span><span class="nb">text</span><span class="w"> </span><span class="k">generated</span><span class="w"> </span><span class="n">always</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="p">(</span><span class="n">first_name</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s1">&#39; &#39;</span><span class="w"> </span><span class="o">||</span><span class="w">  </span><span class="n">last_name</span><span class="p">)</span><span class="w"> </span><span class="n">stored</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="w">    </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="n">account</span><span class="p">(</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="p">)</span>
+<span class="w">    </span><span class="k">values</span>
+<span class="w">        </span><span class="p">(</span><span class="s1">&#39;Foo&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Fooington&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">select</span><span class="w"> </span><span class="n">jsonb_pretty</span><span class="p">(</span>
+<span class="w">        </span><span class="n">graphql</span><span class="p">.</span><span class="n">resolve</span><span class="p">(</span><span class="err">$$</span>
+<span class="w">    </span><span class="err">{</span>
+<span class="w">      </span><span class="n">accountCollection</span><span class="w"> </span><span class="err">{</span>
+<span class="w">        </span><span class="n">edges</span><span class="w"> </span><span class="err">{</span>
+<span class="w">          </span><span class="n">node</span><span class="w"> </span><span class="err">{</span>
+<span class="w">            </span><span class="n">id</span>
+<span class="w">            </span><span class="n">firstName</span>
+<span class="w">            </span><span class="n">lastName</span>
+<span class="w">            </span><span class="n">fullName</span>
+<span class="w">          </span><span class="err">}</span>
+<span class="w">        </span><span class="err">}</span>
+<span class="w">      </span><span class="err">}</span>
+<span class="w">    </span><span class="err">}</span>
+<span class="w">        </span><span class="err">$$</span><span class="p">)</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="w">                     </span><span class="n">jsonb_pretty</span><span class="w">                     </span>
+<span class="c1">------------------------------------------------------</span>
+<span class="w"> </span><span class="err">{</span><span class="w">                                                   </span><span class="o">+</span>
+<span class="w">     </span><span class="ss">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                                       </span><span class="o">+</span>
+<span class="w">         </span><span class="ss">&quot;accountCollection&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                      </span><span class="o">+</span>
+<span class="w">             </span><span class="ss">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">                              </span><span class="o">+</span>
+<span class="w">                 </span><span class="err">{</span><span class="w">                                   </span><span class="o">+</span>
+<span class="w">                     </span><span class="ss">&quot;node&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                       </span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">                    </span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;fullName&quot;</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;Foo Fooington&quot;</span><span class="p">,</span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;lastName&quot;</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;Fooington&quot;</span><span class="p">,</span><span class="w">    </span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;firstName&quot;</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;Foo&quot;</span><span class="w">          </span><span class="o">+</span>
+<span class="w">                     </span><span class="err">}</span><span class="w">                               </span><span class="o">+</span>
+<span class="w">                 </span><span class="err">}</span><span class="w">                                   </span><span class="o">+</span>
+<span class="w">             </span><span class="p">]</span><span class="w">                                       </span><span class="o">+</span>
+<span class="w">         </span><span class="err">}</span><span class="w">                                           </span><span class="o">+</span>
+<span class="w">     </span><span class="err">}</span><span class="w">                                               </span><span class="o">+</span>
+<span class="w"> </span><span class="err">}</span>
+<span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="p">)</span>
+
+<span class="k">rollback</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div></p>
+<h3 id="extending-types-with-functions">Extending Types with Functions</h3>
+<p>For arbitrary computations that do not meet the requirements for <a href="https://www.postgresql.org/docs/14/ddl-generated-columns.html">generated columns</a>, a table's reflected GraphQL type can be extended by creating a function that:</p>
+<ul>
+<li>accepts a single argument of the table's tuple type</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">begin</span><span class="p">;</span>
+<span class="w">    </span><span class="k">comment</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">schema</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="s1">&#39;@graphql({&quot;inflect_names&quot;: true})&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="n">account</span><span class="p">(</span>
+<span class="w">        </span><span class="n">id</span><span class="w"> </span><span class="nb">serial</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span>
+<span class="w">        </span><span class="n">first_name</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span>
+<span class="w">        </span><span class="n">last_name</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span>
+<span class="w">        </span><span class="n">parent_id</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">references</span><span class="w"> </span><span class="n">account</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="w">    </span><span class="c1">-- Extend with function</span>
+<span class="w">    </span><span class="k">create</span><span class="w"> </span><span class="k">function</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="n">_full_name</span><span class="p">(</span><span class="n">rec</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="n">account</span><span class="p">)</span>
+<span class="w">        </span><span class="k">returns</span><span class="w"> </span><span class="nb">text</span>
+<span class="w">        </span><span class="k">immutable</span>
+<span class="w">        </span><span class="k">strict</span>
+<span class="w">        </span><span class="k">language</span><span class="w"> </span><span class="k">sql</span>
+<span class="w">    </span><span class="k">as</span><span class="w"> </span><span class="err">$$</span>
+<span class="w">        </span><span class="k">select</span><span class="w"> </span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;%s %s&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">rec</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">rec</span><span class="p">.</span><span class="n">last_name</span><span class="p">)</span>
+<span class="w">    </span><span class="err">$$</span><span class="p">;</span>
+<span class="w">    </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="n">account</span><span class="p">(</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">parent_id</span><span class="p">)</span>
+<span class="w">    </span><span class="k">values</span>
+<span class="w">        </span><span class="p">(</span><span class="s1">&#39;Foo&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Fooington&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="k">select</span><span class="w"> </span><span class="n">jsonb_pretty</span><span class="p">(</span>
+<span class="w">        </span><span class="n">graphql</span><span class="p">.</span><span class="n">resolve</span><span class="p">(</span><span class="err">$$</span>
+<span class="w">    </span><span class="err">{</span>
+<span class="w">      </span><span class="n">accountCollection</span><span class="w"> </span><span class="err">{</span>
+<span class="w">        </span><span class="n">edges</span><span class="w"> </span><span class="err">{</span>
+<span class="w">          </span><span class="n">node</span><span class="w"> </span><span class="err">{</span>
+<span class="w">            </span><span class="n">id</span>
+<span class="w">            </span><span class="n">firstName</span>
+<span class="w">            </span><span class="n">lastName</span>
+<span class="w">            </span><span class="n">fullName</span>
+<span class="w">            </span><span class="n">parent</span><span class="w"> </span><span class="err">{</span>
+<span class="w">              </span><span class="n">fullName</span>
+<span class="w">            </span><span class="err">}</span>
+<span class="w">          </span><span class="err">}</span>
+<span class="w">        </span><span class="err">}</span>
+<span class="w">      </span><span class="err">}</span>
+<span class="w">    </span><span class="err">}</span>
+<span class="w">        </span><span class="err">$$</span><span class="p">)</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="w">                      </span><span class="n">jsonb_pretty</span><span class="w">                       </span>
+<span class="c1">---------------------------------------------------------</span>
+<span class="w"> </span><span class="err">{</span><span class="w">                                                      </span><span class="o">+</span>
+<span class="w">     </span><span class="ss">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                                          </span><span class="o">+</span>
+<span class="w">         </span><span class="ss">&quot;accountCollection&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                         </span><span class="o">+</span>
+<span class="w">             </span><span class="ss">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">                                 </span><span class="o">+</span>
+<span class="w">                 </span><span class="err">{</span><span class="w">                                      </span><span class="o">+</span>
+<span class="w">                     </span><span class="ss">&quot;node&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                          </span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">                       </span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;parent&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                    </span><span class="o">+</span>
+<span class="w">                             </span><span class="ss">&quot;fullName&quot;</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;Foo Fooington&quot;</span><span class="o">+</span>
+<span class="w">                         </span><span class="err">}</span><span class="p">,</span><span class="w">                             </span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;fullName&quot;</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;Foo Fooington&quot;</span><span class="p">,</span><span class="w">   </span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;lastName&quot;</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;Fooington&quot;</span><span class="p">,</span><span class="w">       </span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;firstName&quot;</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;Foo&quot;</span><span class="w">             </span><span class="o">+</span>
+<span class="w">                     </span><span class="err">}</span><span class="w">                                  </span><span class="o">+</span>
+<span class="w">                 </span><span class="err">}</span><span class="w">                                      </span><span class="o">+</span>
+<span class="w">             </span><span class="p">]</span><span class="w">                                          </span><span class="o">+</span>
+<span class="w">         </span><span class="err">}</span><span class="w">                                              </span><span class="o">+</span>
+<span class="w">     </span><span class="err">}</span><span class="w">                                                  </span><span class="o">+</span>
+<span class="w"> </span><span class="err">}</span>
+<span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="p">)</span>
+
+<span class="k">rollback</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+<p>If the function is written in SQL, its volatility can impact freshness of data returned in mutations:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">begin</span><span class="p">;</span>
+<span class="c1">-- A computed field function written in SQL and marked stable might return stale results.</span>
+<span class="c1">-- Directly from the postgres docs(https://www.postgresql.org/docs/current/xfunc-volatility.html):</span>
+<span class="c1">--For functions written in SQL or in any of the standard procedural languages,</span>
+<span class="c1">--there is a second important property determined by the volatility category,</span>
+<span class="c1">--namely the visibility of any data changes that have been made by the SQL</span>
+<span class="c1">--command that is calling the function. A VOLATILE function will see such</span>
+<span class="c1">--changes, a STABLE or IMMUTABLE function will not. This behavior is</span>
+<span class="c1">--implemented using the snapshotting behavior of MVCC (see Chapter 13): STABLE</span>
+<span class="c1">--and IMMUTABLE functions use a snapshot established as of the start of the</span>
+<span class="c1">--calling query, whereas VOLATILE functions obtain a fresh snapshot at the</span>
+<span class="c1">--start of each query they execute.</span>
+<span class="c1">--The solution is to mark these functions as volatile</span>
+<span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">parent</span>
+<span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="n">uuid</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="n">gen_random_uuid</span><span class="p">(),</span>
+<span class="w">    </span><span class="k">count</span><span class="w"> </span><span class="n">int2</span>
+<span class="p">);</span>
+<span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">child</span>
+<span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="n">uuid</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="n">gen_random_uuid</span><span class="p">(),</span>
+<span class="w">    </span><span class="n">parent_id</span><span class="w"> </span><span class="n">uuid</span><span class="w"> </span><span class="k">references</span><span class="w"> </span><span class="n">parent</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span>
+<span class="w">    </span><span class="k">count</span><span class="w"> </span><span class="n">int2</span>
+<span class="p">);</span>
+<span class="c1">-- note that the function is marked stable and in written in sql</span>
+<span class="k">create</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">replace</span><span class="w"> </span><span class="k">function</span><span class="w"> </span><span class="n">_count</span><span class="p">(</span><span class="n">rec</span><span class="w"> </span><span class="n">parent</span><span class="p">)</span>
+<span class="w">    </span><span class="k">returns</span><span class="w"> </span><span class="nb">smallint</span>
+<span class="w">    </span><span class="k">stable</span>
+<span class="w">    </span><span class="k">language</span><span class="w"> </span><span class="k">sql</span>
+<span class="k">as</span>
+<span class="err">$$</span>
+<span class="w">    </span><span class="k">select</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="k">count</span><span class="p">)</span>
+<span class="w">    </span><span class="k">from</span><span class="w"> </span><span class="n">child</span>
+<span class="w">    </span><span class="k">where</span><span class="w"> </span><span class="n">parent_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rec</span><span class="p">.</span><span class="n">id</span>
+<span class="err">$$</span><span class="p">;</span>
+<span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">parent</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">)</span>
+<span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;8bcf0ee4-95ed-445f-808f-17b8194727ca&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">child</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">parent_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">)</span>
+<span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;57738181-3d0f-45ad-96dd-3ba799b2d21d&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;8bcf0ee4-95ed-445f-808f-17b8194727ca&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span>
+<span class="w">       </span><span class="p">(</span><span class="s1">&#39;cb5993ff-e693-49cd-9114-a6510707e628&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;8bcf0ee4-95ed-445f-808f-17b8194727ca&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="k">select</span><span class="w"> </span><span class="n">jsonb_pretty</span><span class="p">(</span>
+<span class="w">  </span><span class="n">graphql</span><span class="p">.</span><span class="n">resolve</span><span class="p">(</span><span class="err">$$</span>
+<span class="w">    </span><span class="n">query</span><span class="w"> </span><span class="n">ParentQuery</span><span class="w"> </span><span class="err">{</span>
+<span class="w">      </span><span class="n">parentCollection</span><span class="w"> </span><span class="err">{</span>
+<span class="w">        </span><span class="n">edges</span><span class="w"> </span><span class="err">{</span>
+<span class="w">          </span><span class="n">node</span><span class="w"> </span><span class="err">{</span>
+<span class="w">            </span><span class="n">id</span>
+<span class="w">            </span><span class="k">count</span>
+<span class="w">            </span><span class="n">childCollection</span><span class="w"> </span><span class="err">{</span>
+<span class="w">              </span><span class="n">edges</span><span class="w"> </span><span class="err">{</span>
+<span class="w">                </span><span class="n">node</span><span class="w"> </span><span class="err">{</span>
+<span class="w">                  </span><span class="k">count</span>
+<span class="w">                </span><span class="err">}</span>
+<span class="w">              </span><span class="err">}</span>
+<span class="w">            </span><span class="err">}</span>
+<span class="w">          </span><span class="err">}</span>
+<span class="w">        </span><span class="err">}</span>
+<span class="w">      </span><span class="err">}</span>
+<span class="w">    </span><span class="err">}</span>
+<span class="w">  </span><span class="err">$$</span><span class="p">)</span>
+<span class="p">);</span>
+<span class="w">                             </span><span class="n">jsonb_pretty</span><span class="w">                              </span>
+<span class="c1">-----------------------------------------------------------------------</span>
+<span class="w"> </span><span class="err">{</span><span class="w">                                                                    </span><span class="o">+</span>
+<span class="w">     </span><span class="ss">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                                                        </span><span class="o">+</span>
+<span class="w">         </span><span class="ss">&quot;parentCollection&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                                        </span><span class="o">+</span>
+<span class="w">             </span><span class="ss">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">                                               </span><span class="o">+</span>
+<span class="w">                 </span><span class="err">{</span><span class="w">                                                    </span><span class="o">+</span>
+<span class="w">                     </span><span class="ss">&quot;node&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                                        </span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;8bcf0ee4-95ed-445f-808f-17b8194727ca&quot;</span><span class="p">,</span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">                                  </span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;childCollection&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                         </span><span class="o">+</span>
+<span class="w">                             </span><span class="ss">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">                               </span><span class="o">+</span>
+<span class="w">                                 </span><span class="err">{</span><span class="w">                                    </span><span class="o">+</span>
+<span class="w">                                     </span><span class="ss">&quot;node&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                        </span><span class="o">+</span>
+<span class="w">                                         </span><span class="ss">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w">                   </span><span class="o">+</span>
+<span class="w">                                     </span><span class="err">}</span><span class="w">                                </span><span class="o">+</span>
+<span class="w">                                 </span><span class="err">}</span><span class="p">,</span><span class="w">                                   </span><span class="o">+</span>
+<span class="w">                                 </span><span class="err">{</span><span class="w">                                    </span><span class="o">+</span>
+<span class="w">                                     </span><span class="ss">&quot;node&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                        </span><span class="o">+</span>
+<span class="w">                                         </span><span class="ss">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="w">                   </span><span class="o">+</span>
+<span class="w">                                     </span><span class="err">}</span><span class="w">                                </span><span class="o">+</span>
+<span class="w">                                 </span><span class="err">}</span><span class="w">                                    </span><span class="o">+</span>
+<span class="w">                             </span><span class="p">]</span><span class="w">                                        </span><span class="o">+</span>
+<span class="w">                         </span><span class="err">}</span><span class="w">                                            </span><span class="o">+</span>
+<span class="w">                     </span><span class="err">}</span><span class="w">                                                </span><span class="o">+</span>
+<span class="w">                 </span><span class="err">}</span><span class="w">                                                    </span><span class="o">+</span>
+<span class="w">             </span><span class="p">]</span><span class="w">                                                        </span><span class="o">+</span>
+<span class="w">         </span><span class="err">}</span><span class="w">                                                            </span><span class="o">+</span>
+<span class="w">     </span><span class="err">}</span><span class="w">                                                                </span><span class="o">+</span>
+<span class="w"> </span><span class="err">}</span>
+<span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="p">)</span>
+
+<span class="c1">-- since _count is stable, the value returned in parent.count field will be stale</span>
+<span class="c1">-- i.e. parent.count is still 5 instead of (3 + 5) = 8</span>
+<span class="k">select</span><span class="w"> </span><span class="n">jsonb_pretty</span><span class="p">(</span>
+<span class="w">  </span><span class="n">graphql</span><span class="p">.</span><span class="n">resolve</span><span class="p">(</span><span class="err">$$</span>
+<span class="w">    </span><span class="n">mutation</span><span class="w"> </span><span class="n">ChildMutation</span><span class="w"> </span><span class="err">{</span>
+<span class="w">      </span><span class="n">updateChildCollection</span><span class="p">(</span>
+<span class="w">        </span><span class="n">filter</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="n">eq</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;57738181-3d0f-45ad-96dd-3ba799b2d21d&quot;</span><span class="w"> </span><span class="err">}</span><span class="w"> </span><span class="err">}</span>
+<span class="w">        </span><span class="k">set</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="k">count</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="err">}</span>
+<span class="w">      </span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
+<span class="w">        </span><span class="n">records</span><span class="w"> </span><span class="err">{</span>
+<span class="w">          </span><span class="n">id</span>
+<span class="w">          </span><span class="k">count</span>
+<span class="w">          </span><span class="n">parent</span><span class="w"> </span><span class="err">{</span>
+<span class="w">            </span><span class="n">id</span>
+<span class="w">            </span><span class="k">count</span>
+<span class="w">          </span><span class="err">}</span>
+<span class="w">        </span><span class="err">}</span>
+<span class="w">      </span><span class="err">}</span>
+<span class="w">    </span><span class="err">}</span>
+<span class="w">  </span><span class="err">$$</span><span class="p">)</span>
+<span class="p">);</span>
+<span class="w">                             </span><span class="n">jsonb_pretty</span><span class="w">                              </span>
+<span class="c1">-----------------------------------------------------------------------</span>
+<span class="w"> </span><span class="err">{</span><span class="w">                                                                    </span><span class="o">+</span>
+<span class="w">     </span><span class="ss">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                                                        </span><span class="o">+</span>
+<span class="w">         </span><span class="ss">&quot;updateChildCollection&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                                   </span><span class="o">+</span>
+<span class="w">             </span><span class="ss">&quot;records&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">                                             </span><span class="o">+</span>
+<span class="w">                 </span><span class="err">{</span><span class="w">                                                    </span><span class="o">+</span>
+<span class="w">                     </span><span class="ss">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;57738181-3d0f-45ad-96dd-3ba799b2d21d&quot;</span><span class="p">,</span><span class="w">    </span><span class="o">+</span>
+<span class="w">                     </span><span class="ss">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">                                      </span><span class="o">+</span>
+<span class="w">                     </span><span class="ss">&quot;parent&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                                      </span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;8bcf0ee4-95ed-445f-808f-17b8194727ca&quot;</span><span class="p">,</span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="w">                                   </span><span class="o">+</span>
+<span class="w">                     </span><span class="err">}</span><span class="w">                                                </span><span class="o">+</span>
+<span class="w">                 </span><span class="err">}</span><span class="w">                                                    </span><span class="o">+</span>
+<span class="w">             </span><span class="p">]</span><span class="w">                                                        </span><span class="o">+</span>
+<span class="w">         </span><span class="err">}</span><span class="w">                                                            </span><span class="o">+</span>
+<span class="w">     </span><span class="err">}</span><span class="w">                                                                </span><span class="o">+</span>
+<span class="w"> </span><span class="err">}</span>
+<span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="p">)</span>
+
+<span class="c1">-- note that the function is marked volatile</span>
+<span class="k">create</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">replace</span><span class="w"> </span><span class="k">function</span><span class="w"> </span><span class="n">_count</span><span class="p">(</span><span class="n">rec</span><span class="w"> </span><span class="n">parent</span><span class="p">)</span>
+<span class="w">    </span><span class="k">returns</span><span class="w"> </span><span class="nb">smallint</span>
+<span class="w">    </span><span class="k">volatile</span>
+<span class="w">    </span><span class="k">language</span><span class="w"> </span><span class="k">sql</span>
+<span class="k">as</span>
+<span class="err">$$</span>
+<span class="w">    </span><span class="k">select</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="k">count</span><span class="p">)</span>
+<span class="w">    </span><span class="k">from</span><span class="w"> </span><span class="n">child</span>
+<span class="w">    </span><span class="k">where</span><span class="w"> </span><span class="n">parent_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rec</span><span class="p">.</span><span class="n">id</span>
+<span class="err">$$</span><span class="p">;</span>
+<span class="c1">-- since _count is volatile, the value returned in parent.count field will be fresh</span>
+<span class="c1">-- i.e. parent.count is correctly at (3 + 7) 10</span>
+<span class="k">select</span><span class="w"> </span><span class="n">jsonb_pretty</span><span class="p">(</span>
+<span class="w">  </span><span class="n">graphql</span><span class="p">.</span><span class="n">resolve</span><span class="p">(</span><span class="err">$$</span>
+<span class="w">    </span><span class="n">mutation</span><span class="w"> </span><span class="n">ChildMutation</span><span class="w"> </span><span class="err">{</span>
+<span class="w">      </span><span class="n">updateChildCollection</span><span class="p">(</span>
+<span class="w">        </span><span class="n">filter</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="n">eq</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;57738181-3d0f-45ad-96dd-3ba799b2d21d&quot;</span><span class="w"> </span><span class="err">}</span><span class="w"> </span><span class="err">}</span>
+<span class="w">        </span><span class="k">set</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="k">count</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="err">}</span>
+<span class="w">      </span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
+<span class="w">        </span><span class="n">records</span><span class="w"> </span><span class="err">{</span>
+<span class="w">          </span><span class="n">id</span>
+<span class="w">          </span><span class="k">count</span>
+<span class="w">          </span><span class="n">parent</span><span class="w"> </span><span class="err">{</span>
+<span class="w">            </span><span class="n">id</span>
+<span class="w">            </span><span class="k">count</span>
+<span class="w">          </span><span class="err">}</span>
+<span class="w">        </span><span class="err">}</span>
+<span class="w">      </span><span class="err">}</span>
+<span class="w">    </span><span class="err">}</span>
+<span class="w">  </span><span class="err">$$</span><span class="p">)</span>
+<span class="p">);</span>
+<span class="w">                             </span><span class="n">jsonb_pretty</span><span class="w">                              </span>
+<span class="c1">-----------------------------------------------------------------------</span>
+<span class="w"> </span><span class="err">{</span><span class="w">                                                                    </span><span class="o">+</span>
+<span class="w">     </span><span class="ss">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                                                        </span><span class="o">+</span>
+<span class="w">         </span><span class="ss">&quot;updateChildCollection&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                                   </span><span class="o">+</span>
+<span class="w">             </span><span class="ss">&quot;records&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">                                             </span><span class="o">+</span>
+<span class="w">                 </span><span class="err">{</span><span class="w">                                                    </span><span class="o">+</span>
+<span class="w">                     </span><span class="ss">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;57738181-3d0f-45ad-96dd-3ba799b2d21d&quot;</span><span class="p">,</span><span class="w">    </span><span class="o">+</span>
+<span class="w">                     </span><span class="ss">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w">                                      </span><span class="o">+</span>
+<span class="w">                     </span><span class="ss">&quot;parent&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">{</span><span class="w">                                      </span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="ss">&quot;8bcf0ee4-95ed-445f-808f-17b8194727ca&quot;</span><span class="p">,</span><span class="o">+</span>
+<span class="w">                         </span><span class="ss">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">                                  </span><span class="o">+</span>
+<span class="w">                     </span><span class="err">}</span><span class="w">                                                </span><span class="o">+</span>
+<span class="w">                 </span><span class="err">}</span><span class="w">                                                    </span><span class="o">+</span>
+<span class="w">             </span><span class="p">]</span><span class="w">                                                        </span><span class="o">+</span>
+<span class="w">         </span><span class="err">}</span><span class="w">                                                            </span><span class="o">+</span>
+<span class="w">     </span><span class="err">}</span><span class="w">                                                                </span><span class="o">+</span>
+<span class="w"> </span><span class="err">}</span>
+<span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="p">)</span>
+
+<span class="k">rollback</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+<h2 id="computed-relationships">Computed Relationships</h2>
+<p>Computed relations can be helpful to express relationships:</p>
+<ul>
+<li>between entities that don't support foreign keys</li>
+<li>too complex to be expressed via a foreign key</li>
+</ul>
+<p>If the relationship is simple, but involves an entity that does not support foreign keys e.g. Foreign Data Wrappers / Views, defining a comment directive is the easiest solution. See the <a href="../views/">view doc</a> for a complete example. Note that for entities that do not support a primary key, like views, you must define one using a <a href="../configuration/#comment-directives">comment directive</a> to use them in a computed relationship.</p>
+<p>Alternatively, if the relationship is complex, or you need compatibility with PostgREST, you can define a relationship using set returning functions.</p>
+<h3 id="to-one">To-One</h3>
+<p>To One relationships can be defined using a function that returns <code>setof &lt;entity&gt; rows 1</code></p>
+<p>For example
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span>
+<span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="nb">text</span>
+<span class="p">);</span>
+
+<span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="ss">&quot;Address&quot;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span>
+<span class="w">    </span><span class="ss">&quot;isPrimary&quot;</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="k">false</span><span class="p">,</span>
+<span class="w">    </span><span class="ss">&quot;personId&quot;</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">references</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+<span class="w">    </span><span class="n">address</span><span class="w"> </span><span class="nb">text</span>
+<span class="p">);</span>
+
+<span class="c1">-- Example computed relation</span>
+<span class="k">create</span><span class="w"> </span><span class="k">function</span><span class="w"> </span><span class="ss">&quot;primaryAddress&quot;</span><span class="p">(</span><span class="ss">&quot;Person&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">returns</span><span class="w"> </span><span class="k">setof</span><span class="w"> </span><span class="ss">&quot;Address&quot;</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="k">language</span><span class="w"> </span><span class="k">sql</span>
+<span class="w">    </span><span class="k">as</span>
+<span class="err">$$</span>
+<span class="w">    </span><span class="k">select</span><span class="w"> </span><span class="n">addr</span>
+<span class="w">    </span><span class="k">from</span><span class="w"> </span><span class="ss">&quot;Address&quot;</span><span class="w"> </span><span class="n">addr</span>
+<span class="w">    </span><span class="k">where</span><span class="w"> </span><span class="err">$</span><span class="mi">1</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">addr</span><span class="p">.</span><span class="ss">&quot;personId&quot;</span>
+<span class="w">          </span><span class="k">and</span><span class="w"> </span><span class="n">addr</span><span class="p">.</span><span class="ss">&quot;isPrimary&quot;</span>
+<span class="w">    </span><span class="k">limit</span><span class="w"> </span><span class="mi">1</span>
+<span class="err">$$</span><span class="p">;</span>
+
+<span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+<span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Foo Barington&#39;</span><span class="p">);</span>
+
+<span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="ss">&quot;Address&quot;</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;isPrimary&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;personId&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">address</span><span class="p">)</span>
+<span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;1 Main St.&#39;</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div></p>
+<p>results in the GraphQL type</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:1"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Person</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">type</span><span class="w"> </span><span class="err">Person</span><span class="w"> </span><span class="k">implements</span><span class="w"> </span><span class="err">Node</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="err">&quot;&quot;&quot;</span><span class="n">Globally</span><span class="w"> </span><span class="n">Unique</span><span class="w"> </span><span class="n">Record</span><span class="w"> </span><span class="n">Identifier</span><span class="err">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="nl">nodeId</span><span class="p">:</span><span class="w"> </span><span class="n">ID</span><span class="err">!</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="w">  </span><span class="n">primaryAddress</span><span class="err">:</span><span class="w"> </span><span class="n">Address</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p>and can be queried like a natively enforced relationship</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Query</label><label for="__tabbed_2_2">Response</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="n">personCollection</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">edges</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">node</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">id</span>
+<span class="w">        </span><span class="n">name</span>
+<span class="w">        </span><span class="n">primaryAddress</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">address</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;personCollection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;node&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Foo Barington&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;primaryAddress&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1 Main St.&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h3 id="to-many">To-Many</h3>
+<p>To-many relationships can be defined using a function that returns a <code>setof &lt;entity&gt;</code></p>
+<p>For example:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span>
+<span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="nb">text</span>
+<span class="p">);</span>
+
+<span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="ss">&quot;Address&quot;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span>
+<span class="w">    </span><span class="n">address</span><span class="w"> </span><span class="nb">text</span>
+<span class="p">);</span>
+
+<span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="ss">&quot;PersonAtAddress&quot;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span>
+<span class="w">    </span><span class="ss">&quot;personId&quot;</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span>
+<span class="w">    </span><span class="ss">&quot;addressId&quot;</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span>
+<span class="p">);</span>
+
+
+<span class="c1">-- Computed relation to bypass &quot;PersonAtAddress&quot; table for cleaner API</span>
+<span class="k">create</span><span class="w"> </span><span class="k">function</span><span class="w"> </span><span class="ss">&quot;addresses&quot;</span><span class="p">(</span><span class="ss">&quot;Person&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">returns</span><span class="w"> </span><span class="k">setof</span><span class="w"> </span><span class="ss">&quot;Address&quot;</span>
+<span class="w">    </span><span class="k">language</span><span class="w"> </span><span class="k">sql</span>
+<span class="w">    </span><span class="k">as</span>
+<span class="err">$$</span>
+<span class="w">    </span><span class="k">select</span>
+<span class="w">        </span><span class="n">addr</span>
+<span class="w">    </span><span class="k">from</span>
+<span class="w">        </span><span class="ss">&quot;PersonAtAddress&quot;</span><span class="w"> </span><span class="n">pa</span>
+<span class="w">        </span><span class="k">join</span><span class="w"> </span><span class="ss">&quot;Address&quot;</span><span class="w"> </span><span class="n">addr</span>
+<span class="w">            </span><span class="k">on</span><span class="w"> </span><span class="n">pa</span><span class="p">.</span><span class="ss">&quot;addressId&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;addr&quot;</span><span class="p">.</span><span class="n">id</span>
+<span class="w">    </span><span class="k">where</span>
+<span class="w">        </span><span class="n">pa</span><span class="p">.</span><span class="ss">&quot;personId&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">$</span><span class="mi">1</span><span class="p">.</span><span class="n">id</span>
+<span class="err">$$</span><span class="p">;</span>
+
+<span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+<span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Foo Barington&#39;</span><span class="p">);</span>
+
+<span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="ss">&quot;Address&quot;</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">address</span><span class="p">)</span>
+<span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;1 Main St.&#39;</span><span class="p">);</span>
+
+<span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="ss">&quot;PersonAtAddress&quot;</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;personId&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;addressId&quot;</span><span class="p">)</span>
+<span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div></p>
+<p>results in the GraphQL type</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Person</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">type</span><span class="w"> </span><span class="err">Person</span><span class="w"> </span><span class="k">implements</span><span class="w"> </span><span class="err">Node</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="err">&quot;&quot;&quot;</span><span class="n">Globally</span><span class="w"> </span><span class="n">Unique</span><span class="w"> </span><span class="n">Record</span><span class="w"> </span><span class="n">Identifier</span><span class="err">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="nl">nodeId</span><span class="p">:</span><span class="w"> </span><span class="n">ID</span><span class="err">!</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="w">  </span><span class="n">addresses</span><span class="p">(</span>
+<span class="w">    </span><span class="n">first</span><span class="p">:</span><span class="w"> </span><span class="no">Int</span>
+<span class="w">    </span><span class="n">last</span><span class="p">:</span><span class="w"> </span><span class="no">Int</span>
+<span class="w">    </span><span class="n">before</span><span class="p">:</span><span class="w"> </span><span class="no">Cursor</span>
+<span class="w">    </span><span class="n">after</span><span class="p">:</span><span class="w"> </span><span class="no">Cursor</span>
+<span class="w">    </span><span class="n">filter</span><span class="p">:</span><span class="w"> </span><span class="no">AddressFilter</span>
+<span class="w">    </span><span class="n">orderBy</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="no">AddressOrderBy</span><span class="err">!]</span>
+<span class="w">  </span><span class="err">):</span><span class="w"> </span><span class="no">AddressConnection</span>
+<span class="err">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p>and can be queried like a natively enforced relationship</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Query</label><label for="__tabbed_4_2">Response</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="n">personCollection</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">edges</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">node</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">id</span>
+<span class="w">        </span><span class="n">name</span>
+<span class="w">        </span><span class="n">addresses</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">edges</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">node</span><span class="w"> </span><span class="p">{</span>
+<span class="w">              </span><span class="n">id</span>
+<span class="w">              </span><span class="n">address</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;personCollection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;node&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Foo Barington&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;addresses&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                  </span><span class="nt">&quot;node&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1 Main St.&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">              </span><span class="p">]</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+    
+  </body>
+</html>

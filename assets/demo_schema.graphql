@@ -1,0 +1,846 @@
+type Account implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: Int!
+  email: String!
+  createdAt: Datetime!
+  updatedAt: Datetime!
+  blogCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: BlogFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [BlogOrderBy!]
+  ): BlogConnection
+}
+
+type AccountConnection {
+  edges: [AccountEdge!]!
+  pageInfo: PageInfo!
+
+  """The total number of records matching the `filter` criteria"""
+  totalCount: Int!
+}
+
+type AccountDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [Account!]!
+}
+
+type AccountEdge {
+  cursor: String!
+  node: Account!
+}
+
+input AccountFilter {
+  id: IntFilter
+  email: StringFilter
+  createdAt: DatetimeFilter
+  updatedAt: DatetimeFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [AccountFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [AccountFilter!]
+
+  """Negates a filter"""
+  not: AccountFilter
+}
+
+input AccountInsertInput {
+  email: String
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+type AccountInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [Account!]!
+}
+
+input AccountOrderBy {
+  id: OrderByDirection
+  email: OrderByDirection
+  createdAt: OrderByDirection
+  updatedAt: OrderByDirection
+}
+
+input AccountUpdateInput {
+  email: String
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+type AccountUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [Account!]!
+}
+
+"""A high precision floating point value represented as a string"""
+scalar BigFloat
+
+"""
+Boolean expression comparing fields on type "BigFloat"
+"""
+input BigFloatFilter {
+  eq: BigFloat
+  gt: BigFloat
+  gte: BigFloat
+  in: [BigFloat!]
+  is: FilterIs
+  lt: BigFloat
+  lte: BigFloat
+  neq: BigFloat
+}
+
+"""
+Boolean expression comparing fields on type "BigFloatList"
+"""
+input BigFloatListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
+"""An arbitrary size integer represented as a string"""
+scalar BigInt
+
+"""
+Boolean expression comparing fields on type "BigInt"
+"""
+input BigIntFilter {
+  eq: BigInt
+  gt: BigInt
+  gte: BigInt
+  in: [BigInt!]
+  is: FilterIs
+  lt: BigInt
+  lte: BigInt
+  neq: BigInt
+}
+
+"""
+Boolean expression comparing fields on type "BigIntList"
+"""
+input BigIntListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
+type Blog implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: Int!
+  ownerId: Int!
+  name: String!
+  description: String
+  tags: [String]
+  createdAt: Datetime!
+  updatedAt: Datetime!
+  owner: Account!
+  blogPostCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: BlogPostFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [BlogPostOrderBy!]
+  ): BlogPostConnection
+}
+
+type BlogConnection {
+  edges: [BlogEdge!]!
+  pageInfo: PageInfo!
+}
+
+type BlogDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [Blog!]!
+}
+
+type BlogEdge {
+  cursor: String!
+  node: Blog!
+}
+
+input BlogFilter {
+  id: IntFilter
+  ownerId: IntFilter
+  name: StringFilter
+  description: StringFilter
+  tags: StringListFilter
+  createdAt: DatetimeFilter
+  updatedAt: DatetimeFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [BlogFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [BlogFilter!]
+
+  """Negates a filter"""
+  not: BlogFilter
+}
+
+input BlogInsertInput {
+  ownerId: Int
+  name: String
+  description: String
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+type BlogInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [Blog!]!
+}
+
+input BlogOrderBy {
+  id: OrderByDirection
+  ownerId: OrderByDirection
+  name: OrderByDirection
+  description: OrderByDirection
+  createdAt: OrderByDirection
+  updatedAt: OrderByDirection
+}
+
+type BlogPost implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: UUID!
+  blogId: Int!
+  title: String!
+  body: String
+  status: BlogPostStatus!
+  createdAt: Datetime!
+  updatedAt: Datetime!
+  blog: Blog!
+}
+
+type BlogPostConnection {
+  edges: [BlogPostEdge!]!
+  pageInfo: PageInfo!
+}
+
+type BlogPostDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [BlogPost!]!
+}
+
+type BlogPostEdge {
+  cursor: String!
+  node: BlogPost!
+}
+
+input BlogPostFilter {
+  id: UUIDFilter
+  blogId: IntFilter
+  title: StringFilter
+  body: StringFilter
+  status: BlogPostStatusFilter
+  createdAt: DatetimeFilter
+  updatedAt: DatetimeFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [BlogPostFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [BlogPostFilter!]
+
+  """Negates a filter"""
+  not: BlogPostFilter
+}
+
+input BlogPostInsertInput {
+  id: UUID
+  blogId: Int
+  title: String
+  body: String
+  status: BlogPostStatus
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+type BlogPostInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [BlogPost!]!
+}
+
+input BlogPostOrderBy {
+  id: OrderByDirection
+  blogId: OrderByDirection
+  title: OrderByDirection
+  body: OrderByDirection
+  status: OrderByDirection
+  createdAt: OrderByDirection
+  updatedAt: OrderByDirection
+}
+
+enum BlogPostStatus {
+  PENDING
+  RELEASED
+}
+
+"""
+Boolean expression comparing fields on type "BlogPostStatus"
+"""
+input BlogPostStatusFilter {
+  eq: BlogPostStatus
+  in: [BlogPostStatus!]
+  is: FilterIs
+  neq: BlogPostStatus
+}
+
+input BlogPostUpdateInput {
+  id: UUID
+  blogId: Int
+  title: String
+  body: String
+  status: BlogPostStatus
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+type BlogPostUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [BlogPost!]!
+}
+
+input BlogUpdateInput {
+  ownerId: Int
+  name: String
+  description: String
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+type BlogUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [Blog!]!
+}
+
+"""
+Boolean expression comparing fields on type "Boolean"
+"""
+input BooleanFilter {
+  eq: Boolean
+  is: FilterIs
+}
+
+"""
+Boolean expression comparing fields on type "BooleanList"
+"""
+input BooleanListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
+"""
+An opaque string using for tracking a position in results during pagination
+"""
+scalar Cursor
+
+"""A date without time information"""
+scalar Date
+
+"""
+Boolean expression comparing fields on type "Date"
+"""
+input DateFilter {
+  eq: Date
+  gt: Date
+  gte: Date
+  in: [Date!]
+  is: FilterIs
+  lt: Date
+  lte: Date
+  neq: Date
+}
+
+"""
+Boolean expression comparing fields on type "DateList"
+"""
+input DateListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
+"""A date and time"""
+scalar Datetime
+
+"""
+Boolean expression comparing fields on type "Datetime"
+"""
+input DatetimeFilter {
+  eq: Datetime
+  gt: Datetime
+  gte: Datetime
+  in: [Datetime!]
+  is: FilterIs
+  lt: Datetime
+  lte: Datetime
+  neq: Datetime
+}
+
+"""
+Boolean expression comparing fields on type "DatetimeList"
+"""
+input DatetimeListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
+enum FilterIs {
+  NULL
+  NOT_NULL
+}
+
+"""
+Boolean expression comparing fields on type "Float"
+"""
+input FloatFilter {
+  eq: Float
+  gt: Float
+  gte: Float
+  in: [Float!]
+  is: FilterIs
+  lt: Float
+  lte: Float
+  neq: Float
+}
+
+"""
+Boolean expression comparing fields on type "FloatList"
+"""
+input FloatListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
+"""
+Boolean expression comparing fields on type "ID"
+"""
+input IDFilter {
+  eq: ID
+}
+
+"""
+Boolean expression comparing fields on type "Int"
+"""
+input IntFilter {
+  eq: Int
+  gt: Int
+  gte: Int
+  in: [Int!]
+  is: FilterIs
+  lt: Int
+  lte: Int
+  neq: Int
+}
+
+"""
+Boolean expression comparing fields on type "IntList"
+"""
+input IntListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
+"""A Javascript Object Notation value serialized as a string"""
+scalar JSON
+
+"""The root type for creating and mutating data"""
+type Mutation {
+  """Deletes zero or more records from the `Account` collection"""
+  deleteFromAccountCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: AccountFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): AccountDeleteResponse!
+
+  """Deletes zero or more records from the `Blog` collection"""
+  deleteFromBlogCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: BlogFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): BlogDeleteResponse!
+
+  """Deletes zero or more records from the `BlogPost` collection"""
+  deleteFromBlogPostCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: BlogPostFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): BlogPostDeleteResponse!
+
+  """Adds one or more `Account` records to the collection"""
+  insertIntoAccountCollection(objects: [AccountInsertInput!]!): AccountInsertResponse
+
+  """Adds one or more `Blog` records to the collection"""
+  insertIntoBlogCollection(objects: [BlogInsertInput!]!): BlogInsertResponse
+
+  """Adds one or more `BlogPost` records to the collection"""
+  insertIntoBlogPostCollection(objects: [BlogPostInsertInput!]!): BlogPostInsertResponse
+
+  """Updates zero or more records in the `Account` collection"""
+  updateAccountCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: AccountUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: AccountFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): AccountUpdateResponse!
+
+  """Updates zero or more records in the `Blog` collection"""
+  updateBlogCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: BlogUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: BlogFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): BlogUpdateResponse!
+
+  """Updates zero or more records in the `BlogPost` collection"""
+  updateBlogPostCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: BlogPostUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: BlogPostFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): BlogPostUpdateResponse!
+}
+
+interface Node {
+  """Retrieves a record by `ID`"""
+  nodeId: ID!
+}
+
+"""Any type not handled by the type system"""
+scalar Opaque
+
+"""
+Boolean expression comparing fields on type "Opaque"
+"""
+input OpaqueFilter {
+  eq: Opaque
+  is: FilterIs
+}
+
+"""Defines a per-field sorting order"""
+enum OrderByDirection {
+  """Ascending order, nulls first"""
+  AscNullsFirst
+
+  """Ascending order, nulls last"""
+  AscNullsLast
+
+  """Descending order, nulls first"""
+  DescNullsFirst
+
+  """Descending order, nulls last"""
+  DescNullsLast
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
+"""The root type for querying data"""
+type Query {
+  """A pagable collection of type `Account`"""
+  accountCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: AccountFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [AccountOrderBy!]
+  ): AccountConnection
+
+  """A pagable collection of type `Blog`"""
+  blogCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: BlogFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [BlogOrderBy!]
+  ): BlogConnection
+
+  """A pagable collection of type `BlogPost`"""
+  blogPostCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: BlogPostFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [BlogPostOrderBy!]
+  ): BlogPostConnection
+
+  """Retrieve a record by its `ID`"""
+  node(
+    """The record's `ID`"""
+    nodeId: ID!
+  ): Node
+}
+
+"""
+Boolean expression comparing fields on type "String"
+"""
+input StringFilter {
+  eq: String
+  gt: String
+  gte: String
+  ilike: String
+  in: [String!]
+  iregex: String
+  is: FilterIs
+  like: String
+  lt: String
+  lte: String
+  neq: String
+  regex: String
+  startsWith: String
+}
+
+"""
+Boolean expression comparing fields on type "StringList"
+"""
+input StringListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
+"""A time without date information"""
+scalar Time
+
+"""
+Boolean expression comparing fields on type "Time"
+"""
+input TimeFilter {
+  eq: Time
+  gt: Time
+  gte: Time
+  in: [Time!]
+  is: FilterIs
+  lt: Time
+  lte: Time
+  neq: Time
+}
+
+"""
+Boolean expression comparing fields on type "TimeList"
+"""
+input TimeListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
+
+"""A universally unique identifier"""
+scalar UUID
+
+"""
+Boolean expression comparing fields on type "UUID"
+"""
+input UUIDFilter {
+  eq: UUID
+  in: [UUID!]
+  is: FilterIs
+  neq: UUID
+}
+
+"""
+Boolean expression comparing fields on type "UUIDList"
+"""
+input UUIDListFilter {
+  containedBy: [BigFloat!]
+  contains: [BigFloat!]
+  eq: [BigFloat!]
+  overlaps: [BigFloat!]
+  is: FilterIs
+}
